@@ -1,0 +1,28 @@
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Environment configs
+.env
+.env.*
+
+# MySQL dumps (optional)
+*.sql
+
+# Generated files
+dist/
+build/
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Backend misc
+uploads/
+tmp/
