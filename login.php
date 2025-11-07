@@ -10,14 +10,14 @@ include 'connection/dbsConnection.php';
     <title>BatStateU - Student Portal Login</title>
     <link rel="stylesheet" href="styles/styles.css?v=2">
 </head>
-<body class="auth-page">
+<body class="auth-page login-page">
    <section class="login-section" style="position:relative; overflow:visible;">
 
-    <!-- 🔥 Ambient ORBS (inside the section, after content or before closing tag) -->
+   
     <div class="gx-orb gx-orb--soft"  style="right:-80px; top:-100px; background:var(--gx-orb-1);"></div>
     <div class="gx-orb gx-orb--small" style="left:-40px; bottom:-70px; background:var(--gx-orb-2);"></div>
     <div class="gx-orb gx-orb--small" style="left:-50px; top:40%; background:var(--gx-orb-3);"></div>
-    <!-- extra 2 orbs -->
+   
     <div class="gx-orb gx-orb--soft"  style="right:-100px; bottom:-50px; background:var(--gx-orb-4);"></div>
     <div class="gx-orb gx-orb--small" style="right:35%; top:-40px; background:var(--gx-orb-5);"></div>
     </section>
@@ -41,7 +41,6 @@ include 'connection/dbsConnection.php';
                 
                 <div class="form-group">
                     <label for="loginEmail">Student ID or Email</label>
-                    <!-- use text so student IDs are accepted without email-only validation -->
                     <input type="text" id="loginEmail" placeholder="Student ID or email" required>
                 </div>
                 
@@ -83,12 +82,12 @@ include 'connection/dbsConnection.php';
     <script src="settings.js"></script>
     <script src="auth.js"></script>
     <script>
-        // Show a message/banner if redirected here after logout
+        
         window.addEventListener('load', function() {
             try {
                 const params = new URLSearchParams(window.location.search)
                 const flagged = sessionStorage.getItem('batstate_just_logged_out') || params.has('logged_out')
-                // If we arrived with logged_out param, ensure any lingering current_user is cleared
+                
                 if (params.has('logged_out')) {
                     try { localStorage.removeItem('batstate_current_user') } catch (e) {}
                 }
@@ -100,7 +99,7 @@ include 'connection/dbsConnection.php';
                         setTimeout(() => { b.style.display = 'none' }, 4000)
                     }
                     sessionStorage.removeItem('batstate_just_logged_out')
-                    // remove logged_out param from URL to avoid showing again on refresh
+                   
                     if (params.has('logged_out')) {
                         params.delete('logged_out')
                         const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '')
@@ -108,7 +107,7 @@ include 'connection/dbsConnection.php';
                     }
                 }
 
-                // account deleted banner
+             
                 if (params.has('account_deleted')) {
                     showMessage('Your account was deleted.', 'info')
                     const b2 = document.getElementById('logoutBanner')
@@ -117,17 +116,15 @@ include 'connection/dbsConnection.php';
                         b2.style.display = 'block'
                         setTimeout(() => { b2.style.display = 'none' }, 4000)
                     }
-                    // cleanup param after showing
+                  
                     params.delete('account_deleted')
                     const newUrl2 = window.location.pathname + (params.toString() ? '?' + params.toString() : '')
                     history.replaceState({}, document.title, newUrl2)
                 }
 
-                // If a deleted user exists in sessionStorage, show an undo affordance on the login page
                 try {
                     const rawDeleted = sessionStorage.getItem('batstate_deleted_user')
                     if (rawDeleted) {
-                        // create an undo banner similar to profile.html's undoBanner
                         const existing = document.getElementById('undoBanner')
                         if (existing) existing.remove()
                         const b = document.createElement('div')
@@ -139,11 +136,9 @@ include 'connection/dbsConnection.php';
                         const undoBtn = document.getElementById('undoBtn')
                         const dismissBtn = document.getElementById('dismissUndo')
 
-                        // If user does nothing, after N ms consider deletion final and remove the temp snapshot
                         const timeoutMs = (window && window.DELETE_UNDO_TIMEOUT_MS) ? window.DELETE_UNDO_TIMEOUT_MS : 8000
                         let to = setTimeout(() => {
                             try { sessionStorage.removeItem('batstate_deleted_user') } catch (e) {}
-                            // show final deleted message briefly then hide
                             const b2 = document.getElementById('logoutBanner')
                             if (b2) {
                                 b2.textContent = 'Your account was deleted.'
@@ -161,7 +156,6 @@ include 'connection/dbsConnection.php';
                                 if (!raw) return
                                 const payload = JSON.parse(raw)
                                 const restored = payload.user
-                                // restore into users list
                                 let users = JSON.parse(localStorage.getItem('batstate_users') || '[]')
                                 if (!users.find(u => (u.id||u.studentId) == (restored.id||restored.studentId))) {
                                     users.push(restored)
@@ -171,7 +165,6 @@ include 'connection/dbsConnection.php';
                                 sessionStorage.removeItem('batstate_deleted_user')
                                 const ex = document.getElementById('undoBanner')
                                 if (ex) ex.remove()
-                                // navigate to dashboard as restored and signed in
                                 window.location.replace('index.php')
                             } catch (err) { console.error('undo failed', err) }
                         })
@@ -181,7 +174,6 @@ include 'connection/dbsConnection.php';
                             try { sessionStorage.removeItem('batstate_deleted_user') } catch (e) {}
                             const ex = document.getElementById('undoBanner')
                             if (ex) ex.remove()
-                            // show final deleted message
                             try {
                                 const b2 = document.getElementById('logoutBanner')
                                 if (b2) {
@@ -193,10 +185,8 @@ include 'connection/dbsConnection.php';
                         })
                     }
                 } catch (e) {
-                    // ignore errors reading sessionStorage
                 }
             } catch (e) {
-                // ignore
             }
         });
 
@@ -214,7 +204,6 @@ include 'connection/dbsConnection.php';
             const users = JSON.parse(localStorage.getItem('batstate_users') || '[]');
             const idLower = identifier.toLowerCase();
 
-            // Match email case-insensitively, or studentId as exact trimmed string
             const user = users.find(u => {
                 const email = (u.email || '').toString().toLowerCase();
                 const sid = (u.studentId || '').toString().trim();
@@ -242,7 +231,6 @@ include 'connection/dbsConnection.php';
             field.type = field.type === 'password' ? 'text' : 'password';
         }
         
-        // Initialize demo user
         window.addEventListener('load', function() {
             let users = JSON.parse(localStorage.getItem('batstate_users') || '[]');
             if (!users.find(u => u.email === 'student@batstateu.edu.ph')) {

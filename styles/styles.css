@@ -131,7 +131,7 @@ body {
 
 /* Logo image sizing */
 .brand-logo-img {
-  height: 1.6rem; /* aligns with navbar text */
+  height: 3rem; /* default site logo height for index and most pages */
   width: auto;
   display: inline-block;
 }
@@ -140,6 +140,13 @@ body {
 .auth-brand .brand-logo .brand-logo-img,
 .auth-brand .brand-logo img {
   height: 3rem;
+}
+
+/* Make the logo much larger only on the login page. Targets the auth brand
+   specifically to ensure it overrides the default auth rule. */
+body.login-page .auth-brand .brand-logo .brand-logo-img,
+body.login-page .brand-logo-img {
+  height: 10rem;
 }
 
 /* Profile menu styles */

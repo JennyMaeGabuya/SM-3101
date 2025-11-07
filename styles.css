@@ -1,9 +1,6 @@
-/* gx-animations import (Option A): imports the global animation pack.
-  If your server serves `public/` at the web root, keep the path below.
-  Otherwise adjust to `/css/gx-animations.css` or the path your server uses. */
+
 @import url('css/gx-animations.css');
 
-/* Design Tokens - BatStateU University Branding */
 :root {
   --primary-red: #c41e3a;
   --primary-gold: #b8860b;
@@ -55,7 +52,6 @@ body {
   line-height: 1;
 }
 
-/* Page transition overlay (used to animate between pages) */
 .page-transition-overlay {
   position: fixed;
   inset: 0;
@@ -70,7 +66,7 @@ body {
   pointer-events: none;
 }
 .page-transition-overlay.blocking {
-  pointer-events: auto; /* block interactions while animating out */
+  pointer-events: auto; 
 }
 
 @keyframes page-fade-in {
@@ -131,16 +127,12 @@ body {
 
 /* Logo image sizing */
 .brand-logo-img {
-  height: 4rem; /* default site logo height (index and most pages) */
+  height: 3rem; /* default site logo height for most pages */
   width: auto;
   display: inline-block;
 }
 
-/* Auth pages use a slightly larger logo */
-.auth-brand .brand-logo .brand-logo-img,
-.auth-brand .brand-logo img {
-  height: 10rem; 
-}
+/* Remove the global large auth logo so we can target login specifically below. */
 
 /* Profile menu styles */
 .profile-container {
@@ -1174,6 +1166,11 @@ body {
   font-size: 3rem;
   margin-bottom: 1rem;
   display: block;
+}
+
+/* Make the logo a bit larger only on the login page (override default 3rem). */
+body.login-page .brand-logo-img {
+  height: 4rem;
 }
 
 .auth-brand h1 {
