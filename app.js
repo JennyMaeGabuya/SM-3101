@@ -137,6 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
   updateNavigation()
   displayUserInfo()
   renderProfileMenu()
+  // Render the realtime clock in the navbar (skip on login/register pages)
+  try { if (typeof renderClock === 'function') renderClock() } catch (e) { /* ignore */ }
   // render any .user-avatar placeholders across pages
   if (typeof renderUserAvatars === 'function') try { renderUserAvatars() } catch (e) {}
   // Prevent a brief disappearance: mark gx-reveal items as revealed immediately so
@@ -164,6 +166,108 @@ function renderUserAvatars() {
       }
     })
   } catch (e) { console.warn('renderUserAvatars failed', e) }
+}
+
+// Render a realtime clock into the navbar (skips login/register pages)
+function renderClock() {
+  try {
+    const p = (location && location.pathname) ? location.pathname.toLowerCase() : ''
+    if (p.includes('login.php') || p.includes('register.php')) return
+    const navbarContent = document.querySelector('.navbar-content')
+    if (!navbarContent) return
+    if (document.getElementById('siteClock')) return
+
+    // Ensure navbarContent can be used as positioning context
+    if (getComputedStyle(navbarContent).position === 'static') {
+      navbarContent.style.position = 'relative'
+    }
+
+    const el = document.createElement('div')
+    el.id = 'siteClock'
+    el.className = 'site-clock'
+    el.innerHTML = `
+      <div class="clock-wrapper">
+        <div class="time-boxes">
+          <div class="box hour">--</div>
+          <div class="sep">:</div>
+          <div class="box minute">--</div>
+          <div class="sep">:</div>
+          <div class="box second">--</div>
+        </div>
+        <div class="am-pm">AM</div>
+        <div class="site-clock-date">---</div>
+      </div>`
+
+    // Prefer to place the clock under the logout button (right side) as requested.
+    const navbarMenu = navbarContent.querySelector('.navbar-menu')
+    const logoutBtn = navbarMenu && (navbarMenu.querySelector('#logoutBtn') || navbarMenu.querySelector('.btn-logout'))
+
+    // Prefer to place a small clock in the top-right outside the hero (append to .navbar)
+    const navbarEl = document.querySelector('.navbar')
+    if (navbarEl) {
+      el.classList.add('top-clock')
+      // Insert the clock immediately after the .navbar element so it becomes
+      // part of the normal document flow (it will scroll away with the page)
+      // instead of being visually anchored to the sticky navbar.
+      try {
+        if (navbarEl.parentNode) navbarEl.parentNode.insertBefore(el, navbarEl.nextSibling)
+        else navbarEl.appendChild(el)
+      } catch (e) {
+        // fallback to append if insertion fails for any reason
+        navbarEl.appendChild(el)
+      }
+    } else {
+      // fallback: hero or main
+      const hero = document.querySelector('.hero-section')
+      const main = document.querySelector('.main-content')
+      let target = hero || main || navbarContent
+      if (target === hero) el.classList.add('hero-clock')
+      else if (target === main) el.classList.add('main-clock')
+      target.appendChild(el)
+    }
+
+    function pad(n){ return n.toString().padStart(2,'0') }
+    function to12(h) { const m = h % 12; return m === 0 ? 12 : m }
+
+    let lastMinute = null
+
+    function update() {
+      const d = new Date()
+      const hours24 = d.getHours()
+      const hours12 = to12(hours24)
+      const mm = pad(d.getMinutes())
+      const ss = pad(d.getSeconds())
+      const ampm = hours24 >= 12 ? 'PM' : 'AM'
+  const hStr = pad(hours12)
+  const mStr = mm
+  const sStr = ss
+  const date = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+  const hEl = el.querySelector('.box.hour')
+  const mEl = el.querySelector('.box.minute')
+  const sEl = el.querySelector('.box.second')
+  const apEl = el.querySelector('.am-pm')
+  const dEl = el.querySelector('.site-clock-date')
+  if (hEl) hEl.textContent = hStr
+  if (mEl) mEl.textContent = mStr
+  if (sEl) sEl.textContent = sStr
+  if (apEl) apEl.textContent = ampm
+  if (dEl) dEl.textContent = date
+
+      const curMinute = d.getMinutes()
+      if (lastMinute === null) lastMinute = curMinute
+      else if (curMinute !== lastMinute) {
+        // Trigger a visual animation each minute change
+        try {
+          el.classList.add('minute-tick')
+          setTimeout(() => { try { el.classList.remove('minute-tick') } catch (e) {} }, 1200)
+        } catch (e) {}
+        lastMinute = curMinute
+      }
+    }
+
+    update()
+    setInterval(update, 1000)
+  } catch (e) { console.warn('renderClock failed', e) }
 }
 
 // Attach logout handlers to any logout controls (id, class, or data attribute).

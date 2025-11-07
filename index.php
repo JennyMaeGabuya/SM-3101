@@ -1,7 +1,6 @@
 <?php
 include 'connection/dbsConnection.php';
-
-echo "hotdog";
+// debug echo removed to avoid accidental output before HTML
 ?>
 
 <!DOCTYPE html>
@@ -10,13 +9,14 @@ echo "hotdog";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BatStateU - Student Portal Dashboard</title>
-  <link rel="stylesheet" href="styles/styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
-  <!-- Page transition overlay: present in DOM so initial load animation covers FOUC -->
+  
+ 
   <div id="pageTransitionOverlay" class="page-transition-overlay pt-enter" aria-hidden="true"></div>
   <div class="app-container">
-    <!-- Navigation Header -->
+  
     <nav class="navbar">
       <div class="navbar-content">
         <div class="navbar-brand">
@@ -33,7 +33,7 @@ echo "hotdog";
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
             <span class="theme-icon">🌙</span>
           </button>
-          <!-- Added logout button -->
+         
           <a href="login.php" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</a>
         </div>
       </div>
@@ -41,27 +41,26 @@ echo "hotdog";
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Hero Section -->
+      
       <section class="hero-section" style="position:relative; overflow:visible">
         <div class="hero-content">
-          <!-- Example: parallax + shimmer title (opt-in) -->
+          
           <h2 class="hero-title gx-parallax gx-shimmer gx-reveal no-hide" id="greeting">Welcome back, Student</h2>
-          <!-- Added user info display -->
+          
           <p class="hero-subtitle gx-reveal" data-gx-delay="120" id="userInfo">Batangas State University - Student Portal</p>
-          <!-- CTA example: magnetic hover + reveal -->
+          
           <div style="margin-top:1rem">
             <a href="#" class="btn btn-primary gx-magnetic gx-reveal" data-gx-delay="240">ANU ANU</a>
           </div>
-        </div>
-        <!-- Optional ambient orbs (pure CSS classes). Position as needed in markup. -->
-        <div class="gx-orb gx-orb--soft" style="right:-80px; top:-60px; background:var(--gx-orb-1);"></div>
-        <div class="gx-orb gx-orb--small" style="left:-60px; bottom:-40px; background:var(--gx-orb-2);"></div>
-        <!-- Additional ambient orbs -->
-        <div class="gx-orb gx-orb--small" style="right:20px; bottom:10px; background:rgba(196,30,58,0.06);"></div>
-        <div class="gx-orb gx-orb--soft" style="left:10px; top:20px; background:rgba(184,134,11,0.05);"></div>
-      </section>
+      </div>
+    <div class="gx-orb gx-orb--soft" style="right:-80px; top:-60px; background:var(--gx-orb-1);"></div>
+    <div class="gx-orb gx-orb--small" style="left:-60px; bottom:-40px; background:var(--gx-orb-2);"></div>
+   
+    <div class="gx-orb gx-orb--small" style="right:16px; bottom:6px; background:rgba(196,30,58,0.06);"></div>
+    <div class="gx-orb gx-orb--soft" style="left:6px; top:12px; background:rgba(184,134,11,0.05);"></div>
+  </section>
 
-      <!-- Stats Grid -->
+      
       <section class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon courses">📚</div>
@@ -88,7 +87,7 @@ echo "hotdog";
         </div>
       </section>
 
-      <!-- Announcements Section -->
+     
       <section class="announcements-section">
         <div class="section-header">
           <h3 class="hero-title gx-parallax gx-reveal section-title">Recent Announcements</h3>
@@ -102,7 +101,7 @@ echo "hotdog";
         </div>
       </section>
 
-      <!-- Upcoming Classes -->
+      
       <section class="schedule-section">
         <div class="section-header">
           <h3 class="hero-title gx-parallax gx-reveal section-title">Today's Classes</h3>
@@ -116,7 +115,7 @@ echo "hotdog";
         </div>
       </section>
 
-      <!-- Recent Assignments -->
+      
       <section class="assignments-section">
         <div class="section-header">
           <h3 class="hero-title gx-parallax gx-reveal section-title">Upcoming Assignments</h3>
@@ -132,6 +131,7 @@ echo "hotdog";
     </main>
   </div>
 
+  <script src="settings.js"></script>
   <script src="auth.js"></script>
   <script src="portal-data.js"></script>
   <script src="app.js"></script>

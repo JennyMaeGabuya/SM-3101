@@ -202,6 +202,71 @@ body.login-page .brand-logo-img {
 .profile-logout { padding: 0.45rem 0.8rem; border-radius: 6px; display:block; color:#fff; background: linear-gradient(90deg,var(--primary-red), #ff5a6e); border: none; cursor:pointer; font-weight:700; box-shadow: 0 6px 18px rgba(196,30,58,0.18) }
 .profile-logout:hover { transform: translateY(-2px); opacity: 0.98 }
 
+/* Ensure long profile names are visible and not truncated in the navbar. */
+.profile-container { display: inline-flex; align-items: center; margin-left: 0.75rem; gap: 0.5rem; flex-shrink: 0; }
+.profile-button { max-width: 220px; display: inline-flex; align-items: center; gap: 0.6rem; }
+.profile-button .profile-name {
+  display: inline-block;
+  max-width: 12.5rem; /* allow the name some room */
+  white-space: normal; /* allow wrapping to multiple lines if necessary */
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.05; /* compact line-height to keep navbar height reasonable */
+}
+
+/* Site clock styling - appears in navbar near logout */
+.site-clock {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(196,30,58,0.06), rgba(184,134,11,0.03));
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-left: 0.5rem;
+  min-width: 6rem;
+  box-shadow: 0 4px 14px rgba(196,30,58,0.06);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.site-clock:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(196,30,58,0.12); }
+.site-clock-time { font-size: 0.95rem; letter-spacing: 0.6px; }
+.site-clock-date { font-size: 0.72rem; color: var(--text-secondary); font-weight:600 }
+
+/* gentle pulsing glow animation */
+@keyframes clockPulse {
+  0% { box-shadow: 0 0 0 rgba(196,30,58,0.00) }
+  60% { box-shadow: 0 8px 24px rgba(196,30,58,0.06) }
+  100% { box-shadow: 0 0 0 rgba(196,30,58,0.00) }
+}
+.site-clock { animation: clockPulse 6s ease-in-out infinite; }
+
+/* hide clock on small screens to keep navbar tidy */
+@media (max-width: 760px) {
+  .site-clock { display: none }
+}
+
+/* Navbar extras row placed under the main nav menu (right aligned) */
+.navbar-extras {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.35rem;
+}
+
+/* Ensure the extras row doesn't push navbar height excessively */
+.navbar .navbar-extras { align-items: center }
+
+/* When clock is placed next to brand/logo (left side) */
+.brand-clock-wrap { display: inline-flex; margin-left: 1rem; align-items: center }
+.navbar-brand .brand-clock-wrap .site-clock { margin-left: 0.5rem; min-width: auto; padding: 0.25rem 0.5rem }
+
+@media (max-width: 760px) {
+  /* hide clock on small screens whether left or right */
+  .site-clock, .brand-clock-wrap { display: none }
+}
+
 .navbar-menu {
   display: flex;
   gap: 2.5rem;
