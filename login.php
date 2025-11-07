@@ -1,0 +1,262 @@
+<?php
+include 'connection/dbsConnection.php';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BatStateU - Student Portal Login</title>
+    <link rel="stylesheet" href="styles/styles.css?v=2">
+</head>
+<body class="auth-page">
+   <section class="login-section" style="position:relative; overflow:visible;">
+
+    <!-- 🔥 Ambient ORBS (inside the section, after content or before closing tag) -->
+    <div class="gx-orb gx-orb--soft"  style="right:-80px; top:-100px; background:var(--gx-orb-1);"></div>
+    <div class="gx-orb gx-orb--small" style="left:-40px; bottom:-70px; background:var(--gx-orb-2);"></div>
+    <div class="gx-orb gx-orb--small" style="left:-50px; top:40%; background:var(--gx-orb-3);"></div>
+    <!-- extra 2 orbs -->
+    <div class="gx-orb gx-orb--soft"  style="right:-100px; bottom:-50px; background:var(--gx-orb-4);"></div>
+    <div class="gx-orb gx-orb--small" style="right:35%; top:-40px; background:var(--gx-orb-5);"></div>
+    </section>
+    <div id="logoutBanner" class="logout-banner" style="display:none">You have been logged out.</div>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-brand">
+                <div class="brand-logo"><img src="assets/BatStateU-NEU-Logo-1-300x282.png" alt="BatStateU logo" class="brand-logo-img"></div>
+                <h1>BatStateU - LearnHub</h1>
+                <p>Student Learning Portal</p>
+            </div>
+            <div class="auth-welcome">
+                <h2>Welcome Back</h2>
+                <p>Access your courses, track your ongoing quizzes, assignments, activities, and more</p>
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <form id="loginForm" class="auth-form">
+                <h2>Login to Your Account</h2>
+                
+                <div class="form-group">
+                    <label for="loginEmail">Student ID or Email</label>
+                    <!-- use text so student IDs are accepted without email-only validation -->
+                    <input type="text" id="loginEmail" placeholder="Student ID or email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">👁️</button>
+                    </div>
+                </div>
+                
+                <div class="form-options">
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-login">Sign In</button>
+                
+                <div class="divider">
+                    <span>New to BatStateU?</span>
+                </div>
+                
+                <a href="register.html" class="btn-secondary btn-register">Create an Account</a>
+                
+                <div class="auth-message" id="authMessage"></div>
+            </form>
+            
+            <div class="demo-info">
+                <p><strong>Demo Credentials:</strong></p>
+                <p>Email: student@batstateu.edu.ph</p>
+                <p>Password: Demo@2024</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="settings.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Show a message/banner if redirected here after logout
+        window.addEventListener('load', function() {
+            try {
+                const params = new URLSearchParams(window.location.search)
+                const flagged = sessionStorage.getItem('batstate_just_logged_out') || params.has('logged_out')
+                // If we arrived with logged_out param, ensure any lingering current_user is cleared
+                if (params.has('logged_out')) {
+                    try { localStorage.removeItem('batstate_current_user') } catch (e) {}
+                }
+                if (flagged) {
+                    showMessage('You have been logged out.', 'info')
+                    const b = document.getElementById('logoutBanner')
+                    if (b) {
+                        b.style.display = 'block'
+                        setTimeout(() => { b.style.display = 'none' }, 4000)
+                    }
+                    sessionStorage.removeItem('batstate_just_logged_out')
+                    // remove logged_out param from URL to avoid showing again on refresh
+                    if (params.has('logged_out')) {
+                        params.delete('logged_out')
+                        const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '')
+                        history.replaceState({}, document.title, newUrl)
+                    }
+                }
+
+                // account deleted banner
+                if (params.has('account_deleted')) {
+                    showMessage('Your account was deleted.', 'info')
+                    const b2 = document.getElementById('logoutBanner')
+                    if (b2) {
+                        b2.textContent = 'Your account was deleted.'
+                        b2.style.display = 'block'
+                        setTimeout(() => { b2.style.display = 'none' }, 4000)
+                    }
+                    // cleanup param after showing
+                    params.delete('account_deleted')
+                    const newUrl2 = window.location.pathname + (params.toString() ? '?' + params.toString() : '')
+                    history.replaceState({}, document.title, newUrl2)
+                }
+
+                // If a deleted user exists in sessionStorage, show an undo affordance on the login page
+                try {
+                    const rawDeleted = sessionStorage.getItem('batstate_deleted_user')
+                    if (rawDeleted) {
+                        // create an undo banner similar to profile.html's undoBanner
+                        const existing = document.getElementById('undoBanner')
+                        if (existing) existing.remove()
+                        const b = document.createElement('div')
+                        b.id = 'undoBanner'
+                        b.className = 'undo-banner'
+                        b.innerHTML = `<div class="undo-content">Account deleted. <button id="undoBtn" class="btn-secondary">Undo</button> <button id="dismissUndo" class="btn-secondary">Dismiss</button></div>`
+                        document.body.appendChild(b)
+
+                        const undoBtn = document.getElementById('undoBtn')
+                        const dismissBtn = document.getElementById('dismissUndo')
+
+                        // If user does nothing, after N ms consider deletion final and remove the temp snapshot
+                        const timeoutMs = (window && window.DELETE_UNDO_TIMEOUT_MS) ? window.DELETE_UNDO_TIMEOUT_MS : 8000
+                        let to = setTimeout(() => {
+                            try { sessionStorage.removeItem('batstate_deleted_user') } catch (e) {}
+                            // show final deleted message briefly then hide
+                            const b2 = document.getElementById('logoutBanner')
+                            if (b2) {
+                                b2.textContent = 'Your account was deleted.'
+                                b2.style.display = 'block'
+                                setTimeout(() => { b2.style.display = 'none' }, 4000)
+                            }
+                            const ex = document.getElementById('undoBanner')
+                            if (ex) ex.remove()
+                        }, timeoutMs)
+
+                        undoBtn.addEventListener('click', function() {
+                            clearTimeout(to)
+                            try {
+                                const raw = sessionStorage.getItem('batstate_deleted_user')
+                                if (!raw) return
+                                const payload = JSON.parse(raw)
+                                const restored = payload.user
+                                // restore into users list
+                                let users = JSON.parse(localStorage.getItem('batstate_users') || '[]')
+                                if (!users.find(u => (u.id||u.studentId) == (restored.id||restored.studentId))) {
+                                    users.push(restored)
+                                    localStorage.setItem('batstate_users', JSON.stringify(users))
+                                }
+                                localStorage.setItem('batstate_current_user', JSON.stringify(restored))
+                                sessionStorage.removeItem('batstate_deleted_user')
+                                const ex = document.getElementById('undoBanner')
+                                if (ex) ex.remove()
+                                // navigate to dashboard as restored and signed in
+                                window.location.replace('index.html')
+                            } catch (err) { console.error('undo failed', err) }
+                        })
+
+                        dismissBtn.addEventListener('click', function() {
+                            clearTimeout(to)
+                            try { sessionStorage.removeItem('batstate_deleted_user') } catch (e) {}
+                            const ex = document.getElementById('undoBanner')
+                            if (ex) ex.remove()
+                            // show final deleted message
+                            try {
+                                const b2 = document.getElementById('logoutBanner')
+                                if (b2) {
+                                    b2.textContent = 'Your account was deleted.'
+                                    b2.style.display = 'block'
+                                    setTimeout(() => { b2.style.display = 'none' }, 4000)
+                                }
+                            } catch (e) {}
+                        })
+                    }
+                } catch (e) {
+                    // ignore errors reading sessionStorage
+                }
+            } catch (e) {
+                // ignore
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const identifierRaw = (document.getElementById('loginEmail').value || '').toString();
+            const identifier = identifierRaw.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!identifier) {
+                showMessage('Please enter your Student ID or email', 'error');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('batstate_users') || '[]');
+            const idLower = identifier.toLowerCase();
+
+            // Match email case-insensitively, or studentId as exact trimmed string
+            const user = users.find(u => {
+                const email = (u.email || '').toString().toLowerCase();
+                const sid = (u.studentId || '').toString().trim();
+                const emailMatch = email === idLower;
+                const sidMatch = sid === identifier;
+                return (emailMatch || sidMatch) && u.password === password;
+            });
+
+            if (user) {
+                localStorage.setItem('batstate_current_user', JSON.stringify(user));
+                window.location.href = 'index.html';
+            } else {
+                showMessage('Invalid credentials', 'error');
+            }
+        });
+        
+        function showMessage(msg, type) {
+            const el = document.getElementById('authMessage');
+            el.textContent = msg;
+            el.className = 'auth-message ' + type;
+        }
+        
+        function togglePassword(id) {
+            const field = document.getElementById(id);
+            field.type = field.type === 'password' ? 'text' : 'password';
+        }
+        
+        // Initialize demo user
+        window.addEventListener('load', function() {
+            let users = JSON.parse(localStorage.getItem('batstate_users') || '[]');
+            if (!users.find(u => u.email === 'student@batstateu.edu.ph')) {
+                users.push({
+                    id: '2024001',
+                    name: 'Juan Dela Cruz',
+                    email: 'student@batstateu.edu.ph',
+                    password: 'Demo@2024',
+                    studentId: '2024001',
+                    program: 'Bachelor of Science in Computer Science'
+                });
+                localStorage.setItem('batstate_users', JSON.stringify(users));
+            }
+        });
+    </script>
+</body>
+</html>
