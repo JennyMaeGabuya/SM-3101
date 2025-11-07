@@ -1,4 +1,5 @@
 This is the Dedicated File Structure of Group-1
+SanRoom - System for Automated Notification and Reorganization Of Operational Meetings
 
 Members:
 Basco, Asher M.
