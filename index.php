@@ -23,18 +23,18 @@ echo "hotdog";
           <h1 class="brand-logo"><img src="assets/BatStateU-NEU-Logo-1-300x282.png" alt="BatStateU" class="brand-logo-img"> BatStateU Portal</h1>
         </div>
         <div class="navbar-menu">
-          <a href="index.html" class="nav-link active">Dashboard</a>
-          <a href="courses.html" class="nav-link">Courses</a>
-          <a href="assignments.html" class="nav-link">Assignments</a>
-          <a href="grades.html" class="nav-link">Grades</a>
-          <a href="announcements.html" class="nav-link">Announcements</a>
-          <a href="schedule.html" class="nav-link">Schedule</a>
-          <a href="messages.html" class="nav-link">Messages</a>
+          <a href="index.php" class="nav-link active">Dashboard</a>
+          <a href="courses.php" class="nav-link">Courses</a>
+          <a href="assignments.php" class="nav-link">Assignments</a>
+          <a href="grades.php" class="nav-link">Grades</a>
+          <a href="announcements.php" class="nav-link">Announcements</a>
+          <a href="schedule.php" class="nav-link">Schedule</a>
+          <a href="messages.php" class="nav-link">Messages</a>
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
             <span class="theme-icon">🌙</span>
           </button>
           <!-- Added logout button -->
-          <a href="login.html" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</a>
+          <a href="login.php" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</a>
         </div>
       </div>
     </nav>
@@ -92,7 +92,7 @@ echo "hotdog";
       <section class="announcements-section">
         <div class="section-header">
           <h3 class="hero-title gx-parallax gx-reveal section-title">Recent Announcements</h3>
-          <a href="announcements.html" class="btn btn-primary">View All</a>
+          <a href="announcements.php" class="btn btn-primary">View All</a>
         </div>
         <div class="announcements-list" id="announcementsList">
           <div class="empty-state">
@@ -106,7 +106,7 @@ echo "hotdog";
       <section class="schedule-section">
         <div class="section-header">
           <h3 class="hero-title gx-parallax gx-reveal section-title">Today's Classes</h3>
-          <a href="schedule.html" class="btn btn-primary">Full Schedule</a>
+          <a href="schedule.php" class="btn btn-primary">Full Schedule</a>
         </div>
         <div class="schedule-grid" id="todaySchedule">
           <div class="empty-state">
@@ -120,7 +120,7 @@ echo "hotdog";
       <section class="assignments-section">
         <div class="section-header">
           <h3 class="hero-title gx-parallax gx-reveal section-title">Upcoming Assignments</h3>
-          <a href="assignments.html" class="btn btn-primary">View All</a>
+          <a href="assignments.php" class="btn btn-primary">View All</a>
         </div>
         <div class="assignments-list" id="recentAssignments">
           <div class="empty-state">

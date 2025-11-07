@@ -1,0 +1,90 @@
+/* gx-animations.css
+   Tiny, namespaced animation toolkit.
+   Place tokens here to tweak colors/speeds. Designed to be imported globally.
+   Respect prefers-reduced-motion and window.GX_DISABLE_ANIM checks in JS.
+
+   Usage (Option A): add `@import '/css/gx-animations.css'` to your global stylesheet.
+*/
+
+:root{
+  /* Color tokens */
+  --gx-primary: var(--primary-red, #c41e3a);
+  --gx-accent: var(--accent-secondary, #b8860b);
+  --gx-orb-1: rgba(196,30,58,0.12);
+  --gx-orb-2: rgba(184,134,11,0.08);
+
+  /* Timing */
+  --gx-fast: 400ms;
+  --gx-medium: 600ms;
+  --gx-slow: 900ms;
+  --gx-ease: cubic-bezier(.22,.985,.35,1);
+
+  /* Motion magnitudes */
+  --gx-parallax-tilt: 8deg;
+  --gx-magnetic-strength: 14px;
+}
+
+/* Core: only apply enhanced states when JS has enhanced the document */
+html.js .gx-reveal { opacity: 0; transform: translateY(10px); transition: opacity var(--gx-medium) var(--gx-ease), transform var(--gx-medium) var(--gx-ease); will-change: opacity, transform; }
+html.js .gx-reveal.is-revealed { opacity: 1; transform: translateY(0); }
+
+/* Stagger helper: set --gx-delay on items (in JS we will set inline styles). */
+.gx-reveal { will-change: transform, opacity; }
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all GX animations when user prefers reduced motion */
+  .gx-reveal, .gx-parallax, .gx-magnetic, .gx-orb, .gx-shimmer, .gx-float, .gx-marquee__track { transition: none !important; animation: none !important; transform: none !important; }
+}
+
+/* Parallax title (tilt-on-mouse). Small, subtle transform origin centered. JS applies transform inline. */
+.gx-parallax { transform-style: preserve-3d; transition: transform 260ms var(--gx-ease); will-change: transform; }
+
+/* Magnetic hover: container is positioned relative; inner content is moved by JS. */
+.gx-magnetic { display: inline-block; position: relative; transition: transform 260ms var(--gx-ease); will-change: transform; }
+
+/* Shimmer text */
+.gx-shimmer { position: relative; overflow: hidden; display: inline-block; color: inherit; }
+.gx-shimmer::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.12) 45%, rgba(255,255,255,0) 75%); transform: translateX(-120%); mix-blend-mode: overlay; pointer-events: none; }
+/* animate shimmer by default as a CSS-only fallback; JS will also add html.js but this ensures animation in browsers where JS is blocked
+  Respect prefers-reduced-motion via media query below */
+.gx-shimmer::before { animation: gx-shimmer 1400ms var(--gx-ease) infinite; -webkit-animation: gx-shimmer 1400ms var(--gx-ease) infinite; }
+@keyframes gx-shimmer { to { transform: translateX(120%); } }
+@-webkit-keyframes gx-shimmer { to { transform: translateX(120%); } }
+
+/* Float (subtle bob) */
+.gx-float { display: inline-block; will-change: transform; animation: gx-float var(--gx-slow) var(--gx-ease) infinite; -webkit-animation: gx-float var(--gx-slow) var(--gx-ease) infinite; }
+@keyframes gx-float { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+@-webkit-keyframes gx-float { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+
+/* Marquee / conveyor (for logos/screenshots). Minimal, accessible markup:
+   <div class="gx-marquee"><div class="gx-marquee__track"> <div class="gx-marquee__item">...</div> ...</div></div>
+*/
+.gx-marquee { overflow: hidden; width: 100%; }
+.gx-marquee__track { display:flex; gap:1rem; align-items:center; }
+.gx-marquee__item { flex: 0 0 auto; }
+/* Fallback: animate the track by default so it moves even if JS enhancement doesn't run.
+  JS will duplicate the track to make this seamless when available. */
+.gx-marquee__track { animation: gx-marquee-scroll 20s linear infinite; -webkit-animation: gx-marquee-scroll 20s linear infinite; }
+@keyframes gx-marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@-webkit-keyframes gx-marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Bento grid reveal: cards reveal with stagger. Use .gx-bento on the container and .gx-card on items. */
+.gx-bento { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:1rem; }
+/* Bento cards are visible by default. When JS enhancement runs we add the html.js class
+  and reveal control will be handled via .is-revealed for staggered reveals. */
+.gx-bento .gx-card { opacity: 1; transform: translateY(0); transition: opacity var(--gx-medium) var(--gx-ease), transform var(--gx-medium) var(--gx-ease); }
+html.js .gx-bento .gx-card { opacity: 0; transform: translateY(12px); }
+html.js .gx-bento .gx-card.is-revealed { opacity: 1; transform: translateY(0); }
+
+/* Ambient blurred orbs for hero backgrounds */
+.gx-orb { position: absolute; pointer-events: none; filter: blur(30px); opacity: 0.9; mix-blend-mode: screen; }
+.gx-orb--soft { width: 360px; height: 360px; border-radius: 50%; }
+.gx-orb--small { width: 220px; height: 220px; border-radius: 50%; }
+
+/* Utility */
+.gx-hidden { visibility: hidden !important; opacity: 0 !important; }
+
+/* Ensure elements that are NOT opted-in are unaffected */
+
+/* Developer hint: use data-gx-delay to set per-element delays in ms; JS will honor it */

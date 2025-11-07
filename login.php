@@ -67,7 +67,7 @@ include 'connection/dbsConnection.php';
                     <span>New to BatStateU?</span>
                 </div>
                 
-                <a href="register.html" class="btn-secondary btn-register">Create an Account</a>
+                <a href="register.php" class="btn-secondary btn-register">Create an Account</a>
                 
                 <div class="auth-message" id="authMessage"></div>
             </form>
@@ -172,7 +172,7 @@ include 'connection/dbsConnection.php';
                                 const ex = document.getElementById('undoBanner')
                                 if (ex) ex.remove()
                                 // navigate to dashboard as restored and signed in
-                                window.location.replace('index.html')
+                                window.location.replace('index.php')
                             } catch (err) { console.error('undo failed', err) }
                         })
 
@@ -223,9 +223,9 @@ include 'connection/dbsConnection.php';
                 return (emailMatch || sidMatch) && u.password === password;
             });
 
-            if (user) {
+                if (user) {
                 localStorage.setItem('batstate_current_user', JSON.stringify(user));
-                window.location.href = 'index.html';
+                window.location.href = 'index.php';
             } else {
                 showMessage('Invalid credentials', 'error');
             }
