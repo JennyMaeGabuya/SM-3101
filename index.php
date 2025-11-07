@@ -1,5 +1,7 @@
 <?php
 include 'connection/dbsConnection.php';
+
+echo "hotdog";
 ?>
 
 <!DOCTYPE html>
