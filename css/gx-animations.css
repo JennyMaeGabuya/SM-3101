@@ -10,8 +10,8 @@
   /* Color tokens */
   --gx-primary: var(--primary-red, #c41e3a);
   --gx-accent: var(--accent-secondary, #b8860b);
-  --gx-orb-1: rgba(196,30,58,0.12);
-  --gx-orb-2: rgba(184,134,11,0.08);
+  --gx-orb-1: rgba(196,30,58,0.24);
+  --gx-orb-2: rgba(184,134,11,0.16);
 
   /* Timing */
   --gx-fast: 400ms;

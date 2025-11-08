@@ -18,11 +18,11 @@
   --border-color: #333333;
   --shadow: 0 8px 32px rgba(196, 30, 58, 0.2);
   --shadow-sm: 0 4px 12px rgba(196, 30, 58, 0.1);
-  --gx-orb-1: radial-gradient(40% 60% at 50% 50%, #ff1f4f55 0%, transparent 70%);
-  --gx-orb-2: radial-gradient(35% 55% at 50% 50%, #ff274033 0%, transparent 70%);
-  --gx-orb-3: radial-gradient(40% 60% at 50% 50%, #ff335566 0%, transparent 70%);
-  --gx-orb-4: radial-gradient(42% 62% at 50% 50%, #ff6a8a44 0%, transparent 72%);
-  --gx-orb-5: radial-gradient(38% 58% at 50% 50%, #d9113540 0%, transparent 68%);
+  --gx-orb-1: radial-gradient(40% 60% at 50% 50%, #ff1f4fff 0%, transparent 70%);
+  --gx-orb-2: radial-gradient(35% 55% at 50% 50%, #ff2740ff 0%, transparent 70%);
+  --gx-orb-3: radial-gradient(40% 60% at 50% 50%, #ff3355ff 0%, transparent 70%);
+  --gx-orb-4: radial-gradient(42% 62% at 50% 50%, #ff6a8aff 0%, transparent 72%);
+  --gx-orb-5: radial-gradient(38% 58% at 50% 50%, #d91135ff 0%, transparent 68%);
 }
 
 
@@ -1648,3 +1648,4 @@ body.login-page .brand-logo-img {
     padding: 0.4rem;
   }
 }
+  

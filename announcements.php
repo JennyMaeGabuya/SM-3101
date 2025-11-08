@@ -7,16 +7,13 @@
   <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
-  <!-- GX hero inserted for consistent animations across pages (opt-in classes only) -->
     </div>
     <div class="gx-orb gx-orb--soft" style="right:-80px; top:-60px; background:var(--gx-orb-1);"></div>
     <div class="gx-orb gx-orb--small" style="left:-60px; bottom:-40px; background:var(--gx-orb-2);"></div>
-    <!-- Additional ambient orbs -->
     <div class="gx-orb gx-orb--small" style="right:8px; bottom:12px; background:rgba(196,30,58,0.06);"></div>
     <div class="gx-orb gx-orb--soft" style="left:20px; top:18px; background:rgba(184,134,11,0.05);"></div>
   </section>
   <div class="app-container">
-    <!-- Navigation Header -->
     <nav class="navbar">
       <div class="navbar-content">
         <div class="navbar-brand">
