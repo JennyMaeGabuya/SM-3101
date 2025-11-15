@@ -145,12 +145,10 @@
             
             let users = JSON.parse(localStorage.getItem('batstate_users') || '[]');
 
-            // Normalize inputs
             const normalizedStudentId = (studentId || '').toString().trim();
             const normalizedEmail = (email || '').toString().trim().toLowerCase();
 
-            // Check for duplicate studentId
-            // If there's a recently deleted user in sessionStorage (undo window), ignore that user when checking duplicates
+    
             let deletedSid = null
             try {
                 const rawDeleted = sessionStorage.getItem('batstate_deleted_user')
@@ -168,7 +166,6 @@
                 }
             }
 
-            // Check for duplicate email
             if (normalizedEmail) {
                 const foundEmail = users.find(u => (u.email || '').toString().toLowerCase() === normalizedEmail)
                 if (foundEmail && String((foundEmail.id||foundEmail.studentId||'')).trim() !== String(deletedSid || '').trim()) {
@@ -196,7 +193,6 @@
             }, 2000);
         });
 
-        // Inline Student ID validation (instant feedback)
         (function() {
             const sidEl = document.getElementById('regStudentId');
             if (!sidEl) return;
@@ -205,7 +201,6 @@
                     const val = (this.value || '').toString().trim();
                     const users = JSON.parse(localStorage.getItem('batstate_users') || '[]');
                     if (val) {
-                        // Respect recently deleted user in sessionStorage (undo window)
                         let deletedSidLocal = null
                         try {
                             const rawDeletedLocal = sessionStorage.getItem('batstate_deleted_user')
@@ -230,7 +225,6 @@
                         if (el) { el.textContent = ''; el.className = 'auth-message'; }
                     }
                 } catch (e) {
-                    // ignore validation errors
                 }
             });
             sidEl.addEventListener('blur', function() { this.reportValidity(); });

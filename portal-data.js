@@ -1,6 +1,5 @@
 // BatStateU Portal Data Structure
 
-// Sample Courses Data
 const coursesData = [
   {
     id: 1,

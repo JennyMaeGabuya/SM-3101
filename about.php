@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
-  <!-- GX hero inserted for consistent animations across pages (opt-in classes only) -->
   <section class="hero-section" style="position:relative; overflow:visible">
     <div class="hero-content">
       <h2 class="hero-title gx-parallax gx-shimmer gx-reveal">Help & Documentation</h2>
@@ -18,12 +17,10 @@
     </div>
     <div class="gx-orb gx-orb--soft" style="right:-80px; top:-60px; background:var(--gx-orb-1);"></div>
     <div class="gx-orb gx-orb--small" style="left:-60px; bottom:-40px; background:var(--gx-orb-2);"></div>
-    <!-- Additional ambient orbs -->
     <div class="gx-orb gx-orb--small" style="right:12px; bottom:8px; background:rgba(196,30,58,0.06);"></div>
     <div class="gx-orb gx-orb--soft" style="left:14px; top:16px; background:rgba(184,134,11,0.05);"></div>
   </section>
   <div class="app-container">
-    <!-- Navigation Header -->
     <nav class="navbar">
       <div class="navbar-content">
         <div class="navbar-brand">
@@ -36,7 +33,7 @@
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
             <span class="theme-icon">🌙</span>
           </button>
-          <a href="login.php" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</a>
+          <button type="button" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</button>
         </div>
       </div>
     </nav>
@@ -109,7 +106,6 @@
         </div>
       </section>
 
-      <!-- GX Animations demo CTA (added) -->
       <section class="gx-demo-cta" aria-label="Animations demo" style="margin-top:1.25rem">
         <div class="section-header">
           <h3 class="section-title">Motion demo</h3>

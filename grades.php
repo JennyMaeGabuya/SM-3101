@@ -33,7 +33,7 @@
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
             <span class="theme-icon">🌙</span>
           </button>
-          <a href="login.php" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</a>
+          <button type="button" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</button>
         </div>
       </div>
     </nav>

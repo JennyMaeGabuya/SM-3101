@@ -282,42 +282,37 @@ function attachLogoutHandlers() {
       e.preventDefault()
     }
 
-    // confirm and logout
+    // prevent default navigation if element is an anchor/button
+    try { e.preventDefault() } catch (err) {}
+    // show confirmation dialog
     try {
-      if (confirm("Do you really want to log out?")) {
-        // prevent default navigation if element is an anchor/button
-        try { e.preventDefault() } catch (err) {}
-        // show overlay, then call central logout
-        try { showSigningOutOverlay() } catch (err) {}
-        console.log('logout: user confirmed')
-        try {
-          if (typeof window.authLogout === 'function') {
-            window.authLogout()
-          } else {
-            // fallback to simple navigation
-            window.location.replace('login.php')
-          }
-        } catch (err) {
-          console.error('logout: authLogout failed', err)
-          try { window.location.replace('login.php') } catch (e) { window.location.href = 'login.php' }
-        }
-        // fallback: if authLogout didn't redirect, ensure we go to login after 200ms
-        setTimeout(() => {
-          try {
-            if (location.pathname.indexOf('login.php') === -1) {
-              console.warn('logout: fallback redirect to login')
-              window.location.replace('login.php')
-            }
-          } catch (err) { /* ignore */ }
-        }, 200)
-      }
+      if (!confirm("Do you want to logout?")) return
     } catch (err) {
       // In case confirm is blocked, still try to logout
-      try {
-        if (typeof window.authLogout === 'function') window.authLogout()
-        else window.location.replace('login.php')
-      } catch (e) { console.error('logout failed', e); try { window.location.replace('login.php') } catch (_) { window.location.href = 'login.php' } }
     }
+    // show overlay, then call central logout
+    try { showSigningOutOverlay() } catch (err) {}
+    console.log('logout: proceeding')
+    try {
+      if (typeof window.authLogout === 'function') {
+        window.authLogout()
+      } else {
+        // fallback to simple navigation
+        window.location.replace('login.php')
+      }
+    } catch (err) {
+      console.error('logout: authLogout failed', err)
+      try { window.location.replace('login.php') } catch (e) { window.location.href = 'login.php' }
+    }
+    // fallback: if authLogout didn't redirect, ensure we go to login after 200ms
+    setTimeout(() => {
+      try {
+        if (location.pathname.indexOf('login.php') === -1) {
+          console.warn('logout: fallback redirect to login')
+          window.location.replace('login.php')
+        }
+      } catch (err) { /* ignore */ }
+    }, 200)
   }
 
   // Attach to each element if not already attached
@@ -385,7 +380,7 @@ function renderProfileMenu() {
     const initials = (user.name || '').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()
     const avatarHtml = user.avatar ? `<img src="${escapeHtml(user.avatar)}" alt="${escapeHtml(user.name||'avatar')}" />` : initials
     container.innerHTML = `
-      <button id="profileButton" class="profile-button" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-controls="profileDropdown">
+      <button type="button" id="profileButton" class="profile-button" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-controls="profileDropdown">
         <span class="profile-avatar">${avatarHtml}</span>
         <span class="profile-name">${escapeHtml(user.name || 'Student')}</span>
       </button>
@@ -393,7 +388,7 @@ function renderProfileMenu() {
   <div class="profile-info"><strong>${escapeHtml(user.name || '')}</strong><div class="profile-email">${escapeHtml(user.email || '')}</div></div>
         <div class="profile-actions" role="none">
           <a href="profile.php" class="profile-link" role="menuitem" tabindex="0">Profile</a>
-          <button id="profileLogoutBtn" class="profile-logout" role="menuitem" tabindex="0">Logout</button>
+          <button type="button" id="profileLogoutBtn" class="profile-logout" role="menuitem" tabindex="0">Logout</button>
         </div>
       </div>
     `
@@ -483,11 +478,22 @@ function renderProfileMenu() {
     // logout action
     if (logoutBtn) {
       logoutBtn.addEventListener('click', function() {
-        try { showSigningOutOverlay() } catch (e) {}
         try {
-          if (typeof window.authLogout === 'function') window.authLogout()
-          else window.location.replace('login.php')
-        } catch (e) { window.location.replace('login.php') }
+          if (confirm("Do you want to logout?")) {
+            try { showSigningOutOverlay() } catch (e) {}
+            try {
+              if (typeof window.authLogout === 'function') window.authLogout()
+              else window.location.replace('login.php')
+            } catch (e) { window.location.replace('login.php') }
+          }
+        } catch (err) {
+          // In case confirm is blocked, still try to logout
+          try { showSigningOutOverlay() } catch (e) {}
+          try {
+            if (typeof window.authLogout === 'function') window.authLogout()
+            else window.location.replace('login.php')
+          } catch (e) { window.location.replace('login.php') }
+        }
       })
     }
 

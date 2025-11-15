@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
-  <!-- GX hero inserted for consistent animations across pages (opt-in classes only) -->
   <section class="hero-section" style="position:relative; overflow:visible">
     <div class="hero-content">
       <h2 class="hero-title gx-parallax gx-shimmer gx-reveal">Quiz Center</h2>
@@ -20,7 +19,6 @@
     <div class="gx-orb gx-orb--small" style="left:-60px; bottom:-40px; background:var(--gx-orb-2);"></div>
   </section>
   <div class="app-container">
-    <!-- Navigation Header -->
     <nav class="navbar">
       <div class="navbar-content">
         <div class="navbar-brand">
@@ -33,13 +31,12 @@
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
             <span class="theme-icon">🌙</span>
           </button>
-          <a href="login.php" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</a>
+          <button type="button" class="btn-logout" id="logoutBtn" title="Logout" data-logout>🚪 Logout</button>
         </div>
       </div>
     </nav>
 
     <main class="main-content">
-      <!-- Quiz Start Screen -->
       <section class="quiz-start" id="quizStart">
         <div class="quiz-hero">
           <h2 class="quiz-title">JavaScript Fundamentals</h2>
@@ -53,7 +50,6 @@
         <button class="btn btn-primary btn-large" id="startQuizBtn">Start Quiz</button>
       </section>
 
-      <!-- Quiz Container -->
       <section class="quiz-container" id="quizContainer" style="display: none;">
         <div class="quiz-header">
           <div class="quiz-progress">
@@ -75,7 +71,6 @@
         </div>
       </section>
 
-      <!-- Results Screen -->
       <section class="quiz-results" id="quizResults" style="display: none;">
         <div class="results-card">
           <div class="results-icon">🎉</div>
@@ -106,7 +101,6 @@
         </div>
       </section>
 
-      <!-- GX Animations demo CTA (added) -->
       <section class="gx-demo-cta" aria-label="Animations demo" style="margin-top:1.25rem">
         <div class="section-header">
           <h3 class="section-title">Motion demo</h3>

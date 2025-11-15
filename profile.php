@@ -8,12 +8,10 @@
 
 </head>
 <body>
-  <!-- GX hero inserted for consistent animations across pages (opt-in classes only) -->
   
     </div>
      <div class="gx-orb gx-orb--soft" style="right:-80px; top:-60px; background:var(--gx-orb-1);"></div>
         <div class="gx-orb gx-orb--small" style="left:-60px; bottom:-40px; background:var(--gx-orb-2);"></div>
-        <!-- Additional ambient orbs -->
         <div class="gx-orb gx-orb--small" style="right:20px; bottom:10px; background:rgba(196,30,58,0.06);"></div>
         <div class="gx-orb gx-orb--soft" style="left:10px; top:20px; background:rgba(184,134,11,0.05);"></div>
   </section>
@@ -32,7 +30,7 @@
           <a href="schedule.php" class="nav-link">Schedule</a>
           <a href="messages.php" class="nav-link">Messages</a>
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"> <span class="theme-icon">🌙</span></button>
-          <a href="login.php" class="btn-logout" id="logoutBtn" data-logout>🚪 Logout</a>
+          <button type="button" class="btn-logout" id="logoutBtn" data-logout>🚪 Logout</button>
         </div>
       </div>
     </nav>
@@ -116,7 +114,6 @@
   <script src="auth.js"></script>
   <script src="app.js"></script>
   <script>
-    // Wait for app.js to be ready
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('profileForm')
       const msg = document.getElementById('profileMessage')
@@ -139,14 +136,11 @@
         try {
           const raw = localStorage.getItem('batstate_current_user')
           if (!raw) {
-            // If there's no signed-in user, make the message explicit and disable editing to avoid
-            // the ambiguous "Please complete required fields" validation message.
+           
             showMessage('You are not signed in. Please login or register to edit your profile', 'error')
             try {
-              // disable form controls except cancel buttons (which usually have .btn-secondary)
               const controls = form.querySelectorAll('input, select, textarea, button')
               controls.forEach(c => {
-                // keep cancel/navigation buttons usable
                 if (!c.classList.contains('btn-secondary')) c.disabled = true
               })
             } catch (e) {}
@@ -154,16 +148,13 @@
           }
           const u = JSON.parse(raw)
           document.getElementById('profileName').value = u.name || ''
-          // studentId is displayed as static text
           const sidEl = document.getElementById('profileStudentId')
           if (sidEl) sidEl.textContent = u.studentId || u.id || ''
           document.getElementById('profileEmail').value = u.email || ''
           document.getElementById('profileProgram').value = u.program || ''
-          // avatar if available
           if (u.avatar) {
             avatarImg.src = u.avatar
             avatarImg.style.display = 'block'
-            // also update header avatar
             if (headerAvatar) { headerAvatar.src = u.avatar; headerAvatar.style.display = 'block' }
           } else {
             avatarImg.style.display = 'none'
@@ -176,7 +167,6 @@
 
       load()
 
-      // Password strength calculation (simple heuristic)
       function calcPasswordStrength(pw) {
         if (!pw) return { pct: 0, text: '' }
         let score = 0
@@ -194,7 +184,6 @@
         return { pct, text }
       }
 
-      // live update strength
       const newPwInput = document.getElementById('newPassword')
       const confirmPwInput = document.getElementById('confirmNewPassword')
       function updateStrength() {
@@ -205,7 +194,6 @@
       }
       if (newPwInput) newPwInput.addEventListener('input', updateStrength)
 
-      // avatar selection with client-side square auto-crop + resize + compression
       if (avatarInput) {
         avatarInput.addEventListener('change', function() {
           const f = this.files && this.files[0]
@@ -217,25 +205,20 @@
             const tmp = new Image()
             tmp.onload = function() {
               try {
-                // center-crop to square then resize
                 const side = Math.min(tmp.width, tmp.height)
                 const sx = Math.round((tmp.width - side) / 2)
                 const sy = Math.round((tmp.height - side) / 2)
-                const outSize = 128 // smaller max dimension for storage
+                const outSize = 128 
                 const canvas = document.createElement('canvas')
                 canvas.width = outSize
                 canvas.height = outSize
                 const ctx = canvas.getContext('2d')
-                // draw centered square crop into canvas (scaled to outSize)
                 ctx.drawImage(tmp, sx, sy, side, side, 0, 0, outSize, outSize)
-                // export as JPEG to save space (quality 0.72)
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.72)
                 avatarImg.src = dataUrl
                 avatarImg.style.display = 'block'
-                // store a temporary dataurl on the input element for save (resized)
                 avatarInput.dataset.preview = dataUrl
               } catch (e) {
-                // fallback to raw data if canvas fails
                 avatarImg.src = ev.target.result
                 avatarImg.style.display = 'block'
                 avatarInput.dataset.preview = ev.target.result
@@ -244,7 +227,6 @@
               }
             }
             tmp.onerror = function() {
-              // on error, fallback
               avatarImg.src = ev.target.result
               avatarImg.style.display = 'block'
               avatarInput.dataset.preview = ev.target.result
@@ -268,7 +250,6 @@
       form.addEventListener('submit', (e) => {
         e.preventDefault()
   const name = document.getElementById('profileName').value.trim()
-  // support both editable input or static display for studentId
   const studentIdEl = document.getElementById('profileStudentId')
   let studentId = ''
   if (studentIdEl) {
@@ -276,7 +257,6 @@
     if (tag === 'input' || tag === 'textarea' || studentIdEl.isContentEditable) {
       studentId = (studentIdEl.value || studentIdEl.textContent || '').trim()
     } else {
-      // static non-editable display — use textContent but do not treat it as editable in duplicate checks
       studentId = (studentIdEl.textContent || '').trim()
     }
   }
@@ -286,12 +266,10 @@
   const currentPasswordInput = document.getElementById('currentPassword').value
   const newPassword = document.getElementById('newPassword').value
   const confirmNewPassword = document.getElementById('confirmNewPassword').value
-        // Load users and current user early so we can allow updating a subset of fields.
         let users = JSON.parse(localStorage.getItem('batstate_users') || '[]')
         const current = JSON.parse(localStorage.getItem('batstate_current_user') || 'null')
         const currentId = current && (current.id || current.studentId)
 
-        // effective values: keep existing current values when inputs are left blank
         const effectiveName = name || (current && current.name) || ''
         const effectiveEmail = email || (current && current.email) || ''
         const effectiveStudentId = studentId || (current && (current.studentId || current.id)) || ''
@@ -310,13 +288,11 @@
         const dupEmail = users.find(u => (u.email||'').toString().toLowerCase() === effectiveEmail && ((u.id||u.studentId) !== currentId))
         if (dupEmail) { showMessage('Email already in use by another account', 'error'); return }
 
-        // update or create
         let updated = null
         if (currentId) {
           users = users.map(u => {
             if ((u.id || u.studentId) == currentId) {
               updated = Object.assign({}, u, { name: effectiveName, studentId: effectiveStudentId, email: effectiveEmail, program })
-              // handle password change: if newPassword provided, verify currentPasswordInput
               if (newPassword || confirmNewPassword) {
                 if (!currentPasswordInput) {
                   showMessage('Enter your current password to change it', 'error')
@@ -338,7 +314,7 @@
                   updated = null
                   return u
                 }
-                // all good, set new password
+              
                 updated.password = newPassword
               }
               return updated
@@ -347,22 +323,18 @@
           })
         }
         if (!updated) {
-          // create new
           updated = { id: Date.now().toString(), name: effectiveName, studentId: effectiveStudentId, email: effectiveEmail, program, password: current && current.password ? current.password : '' }
           users.push(updated)
         }
-        // attach avatar if provided
         if (avatarInput && avatarInput.dataset && avatarInput.dataset.preview) {
           updated.avatar = avatarInput.dataset.preview
         } else if (avatarImg && avatarImg.src) {
-          // keep existing or cleared
           updated.avatar = avatarImg.src || ''
         }
 
         localStorage.setItem('batstate_users', JSON.stringify(users))
         localStorage.setItem('batstate_current_user', JSON.stringify(updated))
 
-        // update header and preview immediately so the saved avatar is visible without leaving the page
         try {
           if (headerAvatar) {
             if (updated.avatar) { headerAvatar.src = updated.avatar; headerAvatar.style.display = 'block' }
@@ -372,7 +344,6 @@
           if (headerStudentId) headerStudentId.textContent = updated.studentId || ''
           if (avatarImg) { avatarImg.src = updated.avatar || ''; avatarImg.style.display = updated.avatar ? 'block' : 'none' }
 
-          // update navbar profile avatar if present (replace initials with image)
           const profileAvatarEl = document.querySelector('.profile-avatar')
           if (profileAvatarEl) {
             const existingImg = profileAvatarEl.querySelector('img')
@@ -381,28 +352,22 @@
               else profileAvatarEl.innerHTML = `<img src="${updated.avatar}" alt="${(updated.name||'avatar')}">`
             } else {
               if (existingImg) existingImg.remove()
-              // fallback to initials
               const initials = (updated.name || '').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()
               if (!profileAvatarEl.textContent.trim()) profileAvatarEl.textContent = initials
             }
           }
 
-          // refresh greeting (if function available) so dashboard header updates when user returns
           if (typeof updateGreeting === 'function') try { updateGreeting() } catch (e) {}
 
-          // clear the temporary preview dataset
           if (avatarInput && avatarInput.dataset) delete avatarInput.dataset.preview
         } catch (e) {
-          // ignore UI update errors
         }
 
         showMessage('Profile saved successfully', 'success')
       })
 
-      // Delete account flow with confirmation modal and undo affordance
       const deleteBtn = document.getElementById('deleteAccount')
       function showUndoBanner(timeoutMs, deletedUser) {
-        // remove existing banner if present
         const existing = document.getElementById('undoBanner')
         if (existing) existing.remove()
         const b = document.createElement('div')
@@ -416,7 +381,6 @@
 
         let to = setTimeout(() => {
           try { sessionStorage.removeItem('batstate_deleted_user') } catch (e) {}
-          // final redirect to login after the undo window
           window.location.replace('login.php?account_deleted=1')
         }, timeoutMs)
 
@@ -427,26 +391,21 @@
             if (!raw) return
             const payload = JSON.parse(raw)
             const restored = payload.user
-            // restore into users list
             let users = JSON.parse(localStorage.getItem('batstate_users') || '[]')
-            // avoid duplicates
             if (!users.find(u => (u.id||u.studentId) == (restored.id||restored.studentId))) {
               users.push(restored)
               localStorage.setItem('batstate_users', JSON.stringify(users))
             }
             localStorage.setItem('batstate_current_user', JSON.stringify(restored))
             sessionStorage.removeItem('batstate_deleted_user')
-            // update UI to restored state
             if (headerAvatar) { headerAvatar.src = restored.avatar || ''; headerAvatar.style.display = restored.avatar ? 'block' : 'none' }
             if (avatarImg) { avatarImg.src = restored.avatar || ''; avatarImg.style.display = restored.avatar ? 'block' : 'none' }
             if (headerName) headerName.textContent = restored.name || ''
             if (headerStudentId) headerStudentId.textContent = restored.studentId || ''
-            // update navbar/profile avatar
             const profileAvatarEl = document.querySelector('.profile-avatar')
             if (profileAvatarEl) {
               profileAvatarEl.innerHTML = restored.avatar ? `<img src="${restored.avatar}" alt="${(restored.name||'avatar')}">` : (restored.name||'').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()
             }
-            // remove banner
             const ex = document.getElementById('undoBanner')
             if (ex) ex.remove()
             showMessage('Account restored', 'success')
@@ -462,25 +421,20 @@
         })
       }
 
-      // Delete account: remove user from storage, store deleted user in sessionStorage for undo,
-      // then show an undo banner before final redirect.
+     
       window.performPermanentDelete = function() {
         try {
           const cur = JSON.parse(localStorage.getItem('batstate_current_user') || 'null')
           if (!cur) { showMessage('No signed-in user to delete', 'error'); return }
-          // permanently remove user from stored users (compare as strings to avoid type mismatches)
           let users = JSON.parse(localStorage.getItem('batstate_users') || '[]')
           const curKey = String(cur.id || cur.studentId || '')
           const remaining = users.filter(u => String(u.id || u.studentId || '') !== curKey)
           try { localStorage.setItem('batstate_users', JSON.stringify(remaining)) } catch (e) { console.error('failed to update users', e) }
 
-          // save deleted user into sessionStorage for possible undo (short-lived)
           try { sessionStorage.setItem('batstate_deleted_user', JSON.stringify({ user: cur, deletedAt: Date.now() })) } catch (e) { console.error('failed to save deleted user', e) }
 
-          // clear current user locally so UI reflects logged-out state
           localStorage.removeItem('batstate_current_user')
 
-          // show undo affordance and redirect after the undo window
           try { showUndoBanner(5000, cur) } catch (e) { window.location.replace('login.php?account_deleted=1') }
         } catch (err) { console.error(err); showMessage('Delete failed', 'error') }
       }

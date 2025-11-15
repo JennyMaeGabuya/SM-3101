@@ -1,7 +1,7 @@
 /* gx-animations import (Option A): imports the global animation pack.
   If your server serves `public/` at the web root, keep the path below.
   Otherwise adjust to `/css/gx-animations.css` or the path your server uses. */
-@import url('css/gx-animations.css');
+@import url('/css/gx-animations.css');
 
 /* Design Tokens - BatStateU University Branding */
 :root {
