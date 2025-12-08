@@ -296,7 +296,7 @@ For issues or questions:
 
 ## 📄 License
 
-This project is part of the SIA (System Integration and Application) Final project.
+This project is part of the SIA (System Integration and Architecture) Final project.
 
 ## 🎓 Credits
 
