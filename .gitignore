@@ -1,28 +1,55 @@
-# Node
-node_modules/
-npm-debug.log*
-package-lock.json
+# -------------------------
+# Ignore patterns for SanRoom (XAMPP + PHP project)
+# Purpose: keep repository small and avoid committing local secrets, generated files, and uploads.
+# -------------------------
 
-# Environment configs
-.env
-.env.*
-
-# MySQL dumps (optional)
-*.sql
-
-# Generated files
-dist/
-build/
-
-# IDE / OS files
-.vscode/
-.idea/
+# OS / Editor files
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
 
-# Logs
+# Node (if used for tooling)
+node_modules/
+npm-debug.log*
+yarn-error.log
+
+# PHP dependencies (if you run composer locally)
+vendor/
+
+# Build / generated / cache
+dist/
+build/
+.cache/
+cache/
+
+# Logs (do not track runtime logs)
 *.log
+public/Moderator/logs/
+logs/
 
-# Backend misc
+# Uploaded files, user media, temp
 uploads/
+public/uploads/
+public/backend/uploads/
 tmp/
+temp/
+
+# QR images or generated artifacts
+**/qrcodes/
+
+# Secrets / environment-specific configs (DO NOT commit credentials)
+.env
+.env.*
+database.php
+
+# Local database dumps (keep migrations in repo, but ignore local exports)
+*.sql.gz
+*.sql.bak
+
+# Misc
+*.log.*
+
+# End

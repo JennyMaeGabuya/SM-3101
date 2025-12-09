@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SANROOM Real-Time Test Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .panel {
+        background: white;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+      }
+      h2 {
+        color: #0066cc;
+        border-bottom: 2px solid #0066cc;
+        padding-bottom: 10px;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+      .status.ok {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .room-item {
+        padding: 15px;
+        margin: 10px 0;
+        background: #f9f9f9;
+        border-left: 4px solid #0066cc;
+      }
+      .room-item strong {
+        color: #0066cc;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        background: #0066cc;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0052a3;
+      }
+      #liveRoomData {
+        font-family: monospace;
+        white-space: pre-wrap;
+        background: #f5f5f5;
+        padding: 15px;
+        max-height: 400px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🏫 SANROOM Real-Time Monitoring</h1>
+
+      <div class="panel">
+        <h2>API Test</h2>
+        <button onclick="testRoomsAPI()">
+          Test Rooms API (get_all_rooms.php)
+        </button>
+        <div id="apiStatus"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Live Room Data</h2>
+        <button onclick="startLiveMonitoring()">
+          Start Monitoring (Auto-refresh every 2 seconds)
+        </button>
+        <button onclick="stopLiveMonitoring()">Stop Monitoring</button>
+        <div id="liveRoomData">Waiting for data...</div>
+      </div>
+
+      <div class="panel">
+        <h2>Participant Tracking</h2>
+        <div id="roomTracking"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Debug Info</h2>
+        <pre id="debugInfo">Loading...</pre>
+      </div>
+    </div>
+
+    <script>
+      let monitoringInterval = null;
+
+      async function testRoomsAPI() {
+        const statusEl = document.getElementById("apiStatus");
+        statusEl.innerHTML = '<div class="status">Testing...</div>';
+
+        try {
+          const response = await fetch(
+            "/SANROOM/public/backend/get_all_rooms.php"
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            let html =
+              '<div class="status ok">✓ API Success! Returned ' +
+              data.data.length +
+              " room(s):</div>";
+            data.data.forEach((room) => {
+              html += `<div class="room-item">
+                            <strong>${room.room_name}</strong> - 
+                            Capacity: ${room.capacity}, 
+                            Current Students: ${room.current_participants}
+                        </div>`;
+            });
+            statusEl.innerHTML = html;
+          } else {
+            statusEl.innerHTML =
+              '<div class="status error">✗ API Error: ' +
+              data.message +
+              "</div>";
+          }
+        } catch (e) {
+          statusEl.innerHTML =
+            '<div class="status error">✗ Connection Error: ' +
+            e.message +
+            "</div>";
+        }
+      }
+
+      async function updateLiveData() {
+        try {
+          const response = await fetch(
+            "/SANROOM/public/backend/get_all_rooms.php"
+          );
+          const data = await response.json();
+
+          const liveEl = document.getElementById("liveRoomData");
+          if (data.success) {
+            let text =
+              "⏰ Updated: " + new Date().toLocaleTimeString() + "\n\n";
+            data.data.forEach((room) => {
+              text += `📍 ${room.room_name}\n`;
+              text += `   Capacity: ${room.capacity} | Students: ${
+                room.current_participants
+              } | Available: ${Math.max(
+                room.capacity - room.current_participants,
+                0
+              )}\n\n`;
+            });
+            liveEl.textContent = text;
+          } else {
+            liveEl.textContent = "Error: " + data.message;
+          }
+        } catch (e) {
+          document.getElementById("liveRoomData").textContent =
+            "Error fetching data: " + e.message;
+        }
+      }
+
+      function startLiveMonitoring() {
+        updateLiveData(); // Initial load
+        monitoringInterval = setInterval(updateLiveData, 2000);
+        document.getElementById("debugInfo").textContent =
+          "Monitoring started. Refreshing every 2 seconds...";
+      }
+
+      function stopLiveMonitoring() {
+        if (monitoringInterval) {
+          clearInterval(monitoringInterval);
+          document.getElementById("debugInfo").textContent =
+            "Monitoring stopped.";
+        }
+      }
+
+      // Auto-start monitoring on page load
+      window.addEventListener("load", () => {
+        testRoomsAPI();
+      });
+    </script>
+  </body>
+</html>

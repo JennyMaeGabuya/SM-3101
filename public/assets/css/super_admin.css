@@ -1,0 +1,150 @@
+body {
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  /* Enable smooth scrolling for anchor links */
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for main content */
+.dashboard-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 3px;
+}
+
+.dashboard-content::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* General action button active state */
+.btn-action:active {
+  transform: scale(0.98);
+}
+
+/* Sidebar link active state for primary color */
+.sidebar ul li a.active {
+  background-color: #1e40af;
+  /* primary-700 */
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Layout Adjustments */
+@media (min-width: 768px) {
+  .sidebar-desktop {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .sidebar-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar-mobile.open {
+    transform: translateX(0);
+  }
+
+  .dashboard-container {
+    flex-direction: column;
+  }
+}
+
+/* Toast Styles */
+#toastContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+}
+
+/* The main toast element needs to be relative for the absolute close button and progress bar */
+.toast {
+  position: relative;
+  overflow: hidden;
+  /* Ensures progress bar stays contained */
+  max-width: 300px;
+  /* Limit max width for better stacking */
+}
+
+.toast.success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #d1fae5;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Keyframe animation for the progress bar (5 seconds) */
+@keyframes countdown {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
+}
+
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: #10b981;
+  /* Green color for success */
+  animation: countdown 5s linear forwards;
+  /* 5 seconds linear countdown */
+}
+
+.animate-toastIn {
+  animation: toastIn 0.3s ease-out forwards;
+}
+
+.animate-toastOut {
+  animation: toastOut 0.3s ease-in forwards;
+}
+
+/* Accordion Transition Styles */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+}
+
+.accordion-content.open {
+  /* Set to a large enough value to accommodate the table height */
+  max-height: 1000px;
+  transition: max-height 0.6s ease-in;
+}
+
+.accordion-header.active .accordion-icon {
+  transform: rotate(180deg);
+}
+
+.accordion-icon {
+  transition: transform 0.3s ease;
+}

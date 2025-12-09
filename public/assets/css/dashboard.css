@@ -1,0 +1,843 @@
+/**
+ * SANROOM Dashboard Stylesheet
+ * V3.8: Status Background Opacity for Card Context
+ */
+
+/* ----------------------- 1. VARIABLES & BASE ----------------------- */
+:root {
+  /* Color Palette */
+  --color-primary: #133d73; /* Dark Blue (Branding/Main Actions) */
+  --color-secondary: #0d2d52; /* Darker Blue (Hover/Headings) */
+  --color-background: #f4f5f9; /* Light Gray Background */
+  --color-card: #ffffff; /* Card/Modal Background */
+  --color-border: #e0e0e0; /* Clean light border */
+
+  /* Text & Utility Colors */
+  --color-text-dark: #212529;
+  --color-text-subtle: #6c757d;
+  --color-danger: #dc3545; /* Red (Danger/Logout/Archive) */
+  --color-danger-dark: #c82333;
+  --color-success: #28a745; /* Green (Online/Save) */
+  --color-warning: #ffc107; /* Yellow (Face-to-Face) */
+  --color-info: #007bff; /* Blue (Active/Edit) */
+
+  /* Status Colors (Used for background of visible badges) */
+  --status-active-color: var(--color-info);
+  --status-online-color: var(--color-success);
+  --status-face-to-face-color: var(--color-warning);
+  --status-suspended-color: #6c757d; /* Gray/Muted */
+  --status-archived-color: #343a40; /* Dark Gray */
+
+  /* NEW: Status Opacity Colors for Card Backgrounds (Using RGBa for opacity control) */
+  --status-active-bg: rgba(0, 123, 255, 0.08); /* Light Blue */
+  --status-online-bg: rgba(40, 167, 69, 0.08); /* Light Green */
+  --status-face-to-face-bg: rgba(
+    255,
+    193,
+    7,
+    0.15
+  ); /* Light Yellow (higher opacity for contrast) */
+  --status-suspended-bg: rgba(108, 117, 125, 0.05); /* Very Light Gray */
+  --status-archived-bg: rgba(52, 58, 64, 0.05); /* Very Light Dark Gray */
+
+  /* Typography & Spacing */
+  --font-family: "Poppins", sans-serif;
+  --spacing-xs: 5px;
+  --spacing-sm: 10px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --radius-sm: 4px;
+  --radius-md: 8px; /* Used for rounded image corners */
+  --radius-lg: 12px;
+}
+
+/* Global Reset for better consistency */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--color-background);
+  color: var(--color-text-dark);
+  line-height: 1.6;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: calc(
+    100vh - 56px
+  ); /* Adjusted to account for the navbar height (approx 56px) */
+}
+
+/* ----------------------- 2. SIDEBAR NAVIGATION ----------------------- */
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  background-color: var(--color-primary);
+  color: var(--color-card);
+  padding: var(--spacing-lg) 0;
+  flex-shrink: 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h1 {
+  font-size: 1.8rem;
+  text-align: center;
+  margin: 0 0 var(--spacing-lg) 0;
+  font-weight: 700;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li a {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-decoration: none;
+  color: #c0cff0;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s, border-left 0.2s;
+}
+
+.sidebar ul li a:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-card);
+}
+
+.sidebar ul li a.active {
+  background-color: var(--color-secondary);
+  color: var(--color-card);
+  font-weight: 600;
+  border-left: 5px solid var(--color-card);
+}
+
+/* ----------------------- 3. MAIN CONTENT & TOP BAR ----------------------- */
+.dashboard-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.top-bar h2 {
+  font-size: 1.8rem;
+  color: var(--color-secondary);
+  margin: 0;
+  font-weight: 700;
+}
+
+.top-bar p {
+  color: var(--color-text-subtle);
+  font-size: 0.9rem;
+  margin: 0 0 0 var(--spacing-md);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Button Base Styles */
+.btn-view,
+.btn-add {
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.1s;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.btn-view:active,
+.btn-add:active {
+  transform: translateY(1px);
+}
+
+/* View Button */
+.btn-view {
+  background-color: var(--color-card);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+.btn-view:hover {
+  background-color: var(--color-primary);
+  color: var(--color-card);
+}
+
+/* Add Button */
+.btn-add {
+  background-color: var(--color-primary);
+  color: var(--color-card);
+}
+.btn-add:hover {
+  background-color: var(--color-secondary);
+}
+
+/* ----------------------- 4. SCHEDULE LIST & CARDS (RIGHT-STACKED STATUS) ----------------------- */
+.schedule-list {
+  margin-top: var(--spacing-lg);
+}
+
+.schedule-list h3 {
+  font-size: 1.5rem;
+  color: var(--color-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.day-schedule {
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.day-schedule h4 {
+  font-size: 1.25rem;
+  margin: 0 0 5px 0;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.day-schedule .count {
+  font-size: 0.9rem;
+  color: var(--color-text-subtle);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+/* Schedule Card - Ultra-Compact Vertical */
+.schedule-card {
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm) var(--spacing-lg); /* Increased horizontal padding */
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  transition: background-color 0.3s ease;
+  background-color: var(--color-card); /* Base white */
+  border-left: 4px solid var(--color-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Status-based border colors and NEW Background Colors */
+.schedule-card.status-active {
+  border-left-color: var(--status-active-color);
+  background-color: var(--status-active-bg);
+}
+.schedule-card.status-online {
+  border-left-color: var(--status-online-color);
+  background-color: var(--status-online-bg);
+}
+.schedule-card.status-suspended {
+  border-left-color: var(--status-suspended-color);
+  background-color: var(--status-suspended-bg);
+}
+.schedule-card.status-face-to-face {
+  border-left-color: var(--status-face-to-face-color);
+  background-color: var(--status-face-to-face-bg);
+}
+.schedule-card.status-archived {
+  border-left-color: var(--status-archived-color);
+  background-color: var(--status-archived-bg);
+}
+
+/* Card Info and Instructor Details */
+.schedule-info {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.instructor-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0 0 0 var(--spacing-md);
+  line-height: 1.1;
+  flex-grow: 1;
+}
+
+/* Instructor Image - MUCH BIGGER & ROUNDED SQUARE */
+.instructor-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-md); /* ROUNDED SQUARE (8px) */
+  border: 3px solid var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Text alignment and styling */
+.schedule-info p {
+  margin: 0;
+  line-height: 1.4;
+  font-size: 0.85rem;
+  color: var(--color-text-subtle);
+  text-align: justify;
+  margin-top: 3px;
+  padding-right: var(--spacing-sm);
+}
+
+.schedule-info strong {
+  font-size: 1rem;
+  display: block;
+  margin: 0;
+  line-height: 1.1;
+  color: var(--color-text-dark);
+  font-weight: 600;
+}
+
+/* Schedule Actions - Status and Buttons */
+.schedule-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+/* --- Status Badges - Clean, Prominent Look --- */
+.status-badge {
+  /* Base badge styling */
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.status-badge.active {
+  background-color: var(--status-active-color);
+  color: var(--color-card);
+}
+.status-badge.online {
+  background-color: var(--status-online-color);
+  color: var(--color-card);
+}
+.status-badge.suspended {
+  background-color: var(--status-suspended-color);
+  color: var(--color-card);
+}
+.status-badge.face-to-face {
+  background-color: var(--status-face-to-face-color);
+  color: var(--color-text-dark);
+}
+.status-badge.archived {
+  background-color: var(--status-archived-color);
+  color: var(--color-card);
+}
+/* ----------------------------------------------- */
+
+/* Button Group (Horizontal layout within the stacked column) */
+.action-group {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* Action button base style */
+.schedule-actions button {
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, transform 0.1s;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: var(--color-card);
+  min-width: 55px;
+  flex-grow: 1;
+}
+
+/* Specific Action Buttons - Optimized Colors */
+.btn-edit {
+  background: var(--color-info);
+}
+.btn-edit:hover {
+  background: #0056b3;
+}
+
+.btn-archive {
+  background: var(--color-danger);
+}
+.btn-archive:hover {
+  background: var(--color-danger-dark);
+}
+
+/* Status Change Buttons */
+.btn-suspend {
+  background: var(--color-text-subtle);
+}
+.btn-suspend:hover {
+  background: #5a6268;
+}
+
+.btn-online {
+  background: var(--color-success);
+}
+.btn-online:hover {
+  background: #1e7e34;
+}
+
+.btn-face {
+  background: var(--color-warning);
+  color: var(--color-text-dark);
+}
+.btn-face:hover {
+  background: #e0a800;
+}
+
+.btn-restore {
+  background: var(--color-primary);
+}
+.btn-restore:hover {
+  background: var(--color-secondary);
+}
+
+/* ----------------------- 5. NAVBAR & USER INFO ----------------------- */
+/* (Unchanged) */
+.navbar {
+  background-color: #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 25px;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.user-info p {
+  color: var(--color-text-subtle);
+  font-weight: 500;
+  margin: 0;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.user-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.username {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.role {
+  color: var(--color-text-subtle);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.btn-logout {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-primary);
+  color: var(--color-danger);
+  font-weight: 600;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 0.85rem;
+}
+
+.btn-logout:hover {
+  background-color: var(--color-danger);
+  color: var(--color-card);
+}
+
+/* ----------------------- 6. MODAL & FORM ----------------------- */
+/* (Unchanged) */
+
+/* Modal Overlay */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.visible {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Modal Content Box */
+.modal-content {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg) 30px;
+  width: 550px;
+  max-width: 90%;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal.visible .modal-content {
+  animation: slideDown 0.3s ease;
+}
+
+/* Close Button */
+.modal-content .close-btn {
+  position: absolute;
+  top: var(--spacing-md);
+  right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s;
+}
+
+.modal-content .close-btn:hover {
+  color: var(--color-danger);
+}
+
+/* Modal Form Title */
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+  font-size: 1.6rem;
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+}
+
+/* === TWO-COLUMN FLEX LAYOUT STYLES === */
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+/* ================================== */
+
+/* General form group styling */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  margin-bottom: var(--spacing-xs);
+  font-weight: 600;
+  color: var(--color-secondary);
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--status-active-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* Nested time inputs */
+.form-group.form-time {
+  flex-direction: row;
+  gap: var(--spacing-md);
+  margin-bottom: 0;
+}
+
+.form-time .sub-group {
+  flex: 1;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.modal-buttons .btn-cancel,
+.modal-buttons .btn-save {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.modal-buttons .btn-cancel {
+  background-color: #f8f9fa;
+  color: var(--color-text-subtle);
+  border: 1px solid #ced4da;
+}
+.modal-buttons .btn-cancel:hover {
+  background-color: #e2e6ea;
+}
+
+.modal-buttons .btn-save {
+  background-color: var(--status-online-color);
+  color: var(--color-card);
+}
+.modal-buttons .btn-save:hover {
+  background-color: #1e7e34;
+}
+
+/* Animations for modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ----------------------- 7. TOAST NOTIFICATIONS ----------------------- */
+/* (Unchanged) */
+
+#toastContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  padding: 15px 25px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0;
+  animation: toastIn 0.4s forwards, toastOut 0.4s 2.6s forwards;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.toast.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.toast.error {
+  background-color: #f8d7da;
+  color: var(--color-danger);
+  border: 1px solid #f5c6cb;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastOut {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* ----------------------- 8. MEDIA QUERIES ----------------------- */
+@media (max-width: 992px) {
+  /* Adjustments for tablets */
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Adjustments for mobile */
+  .dashboard-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    padding: var(--spacing-md) 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  .sidebar h1 {
+    font-size: 1.5rem;
+  }
+  .dashboard-content {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .top-bar h2 {
+    margin-bottom: var(--spacing-xs);
+  }
+
+  /* Schedule Cards on mobile - Revert to horizontal actions and stack status */
+  .schedule-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .schedule-info {
+    flex-direction: column;
+    align-items: center;
+  }
+  .instructor-details {
+    flex-direction: column;
+    align-items: center;
+    margin: var(--spacing-sm) 0 0 0;
+  }
+  .schedule-actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: var(--spacing-sm);
+  }
+
+  .status-badge {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .action-group {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .schedule-info p {
+    text-align: left; /* Justify looks bad on small screens */
+  }
+
+  /* Modal on mobile */
+  .modal-content {
+    width: 95%;
+  }
+  .form-row,
+  .form-group.form-time {
+    flex-direction: column;
+    gap: 0;
+  }
+  .form-row .form-group,
+  .form-time .sub-group {
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+/* Schedule Card: Add cursor pointer to header for collapse/expand */
+.day-schedule .day-header {
+  cursor: pointer;
+  display: flex; /* Allow h4 and p to be side-by-side */
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5px; /* Add slight padding */
+  margin-bottom: var(--spacing-sm);
+  transition: background-color 0.1s;
+}
+
+.day-schedule .day-header:hover {
+  background-color: var(--color-background); /* Highlight on hover */
+}
+
+/* Day Header Text and Count */
+.day-schedule h4,
+.day-schedule .count {
+  margin: 0;
+}
+
+/* Ensure the cards list is clean */
+.day-schedule .class-list {
+  padding: 0;
+  margin: 0;
+  /* Optional: use max-height/overflow-hidden for a smooth transition if you add CSS transitions */
+}
+
+/* Toggle Icon Styling */
+.day-schedule .toggle-icon {
+  font-size: 0.8rem;
+  margin-left: var(--spacing-sm);
+  transition: transform 0.2s;
+  display: inline-block;
+}

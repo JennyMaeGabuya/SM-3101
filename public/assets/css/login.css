@@ -1,5 +1,13 @@
+/* General body styles */
+html,
 body {
   margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
   font-family: "Poppins", sans-serif;
   background-color: #f2f3f5;
 }
@@ -23,24 +31,15 @@ body {
   margin-bottom: 20px;
 }
 
-.logo {
-  position: relative;
-}
-
 .logo img {
   width: 100px;
   height: 100px;
-  transform: scale(3.5); /* make it 50% bigger */
+  transform: scale(3.5);
+  /* make it bigger */
   transform-origin: center;
 }
 
-.logo h1 {
-  margin: 10px 0 5px;
-  color: #0d2d52;
-}
-
 .logo p {
-  margin-top: 20px;
   color: #23395d;
   font-size: 25px;
 }
@@ -56,13 +55,11 @@ body {
 
 .login-box h2 {
   color: #0d2d52;
-  margin-bottom: 10px;
 }
 
 .login-box label {
   display: block;
   margin-top: 15px;
-  font-weight: 500;
   color: #333;
 }
 
@@ -98,6 +95,80 @@ body {
   align-items: center;
   color: white;
   font-size: 3rem;
-  font-weight: 700;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.signup-link {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: center;
+}
+
+.signup-link a {
+  color: #0d2d52;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.signup-link a:hover {
+  color: #133d73;
+  text-decoration: underline;
+}
+
+/* ------------------------------------- */
+/* TOAST NOTIFICATION STYLES (CENTERED)  */
+/* ------------------------------------- */
+
+/* The container is used to hold the toast(s) on a full-screen fixed layer */
+#toast-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  /* Use flexbox to center content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* Allows clicks to pass through when no toast is visible */
+}
+
+/* Styles for the individual Toast Message (using fixed position relative to viewport) */
+.toast {
+  /* Centering using position and transform */
+  position: fixed;
+  top: 7%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8); /* Center and start scaled down */
+
+  /* Appearance */
+  visibility: hidden;
+  min-width: 280px;
+  max-width: 90%;
+  background-color: #4caf50; /* Super Admin Success Color */
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 18px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: auto; /* Re-enable clicks on the toast itself */
+
+  /* Transitions */
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out,
+    background-color 0.3s ease;
+}
+
+/* Show Toast with animation */
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1); /* Final centered position, scaled up */
 }
