@@ -38,6 +38,13 @@ include 'connection/dbsConnection.php';
         <div class="auth-right">
             <form id="loginForm" class="auth-form">
                 <h2>Login to Your Account</h2>
+                <div class="form-group">
+                    <label>Login As</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <label><input type="radio" name="role" value="student" checked> Student</label>
+                        <label><input type="radio" name="role" value="teacher"> Teacher</label>
+                    </div>
+                </div>
                 
                 <div class="form-group">
                     <label for="loginEmail">Student ID or Email</label>
@@ -73,8 +80,8 @@ include 'connection/dbsConnection.php';
             
             <div class="demo-info">
                 <p><strong>Demo Credentials:</strong></p>
-                <p>Email: student@batstateu.edu.ph</p>
-                <p>Password: Demo@2024</p>
+                <p>Student — Email: student@batstateu.edu.ph | Password: Demo@2024</p>
+                <p>Teacher — Email: teacher@batstateu.edu.ph | Password: Teach@2024</p>
             </div>
         </div>
     </div>
@@ -190,34 +197,46 @@ include 'connection/dbsConnection.php';
             }
         });
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const identifierRaw = (document.getElementById('loginEmail').value || '').toString();
             const identifier = identifierRaw.trim();
             const password = document.getElementById('loginPassword').value;
+                const roleEl = document.querySelector('input[name="role"]:checked');
+                const role = roleEl ? roleEl.value : 'student';
 
             if (!identifier) {
                 showMessage('Please enter your Student ID or email', 'error');
                 return;
             }
 
-            const users = JSON.parse(localStorage.getItem('batstate_users') || '[]');
-            const idLower = identifier.toLowerCase();
-
-            const user = users.find(u => {
-                const email = (u.email || '').toString().toLowerCase();
-                const sid = (u.studentId || '').toString().trim();
-                const emailMatch = email === idLower;
-                const sidMatch = sid === identifier;
-                return (emailMatch || sidMatch) && u.password === password;
+            // Send credentials to server for verification
+            fetch('login_action.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier: identifier, password: password, role: role })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success && data.user) {
+                    // store current user locally for client-side features
+                    try { localStorage.setItem('batstate_current_user', JSON.stringify(data.user)); } catch (e) {}
+                    showMessage('Login successful. Redirecting...', 'success');
+                    setTimeout(() => {
+                        if (data.role && data.role === 'teacher') {
+                            window.location.href = 'teacher/index.php';
+                        } else {
+                            window.location.href = 'index.php';
+                        }
+                    }, 800);
+                } else {
+                    showMessage((data && data.message) || 'Invalid credentials', 'error');
+                }
+            })
+            .catch(err => {
+                showMessage('Server error: ' + (err.message || err), 'error');
             });
-
-                if (user) {
-                localStorage.setItem('batstate_current_user', JSON.stringify(user));
-                window.location.href = 'index.php';
-            } else {
-                showMessage('Invalid credentials', 'error');
-            }
         });
         
         function showMessage(msg, type) {

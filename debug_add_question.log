@@ -1,0 +1,627 @@
+[2025-11-22 20:58:44] ADD_QUESTION: quiz_id=8 insert_id=6 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => what are u
+    [question_type] => mcq
+    [options] => A. BOY
+B. GIRL
+C. WHAT
+D. NEGGA
+    [correct_answer] => A. BOY
+    [correct_answer_short] => 
+)
+
+
+[2025-11-22 21:05:32] ADD_QUESTION: quiz_id=8 insert_id=7 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => PARIS
+
+    [question_type] => mcq
+    [options] => PARIS
+LONDON
+WHAT
+HEH
+    [correct_answer] => PARIS
+    [correct_answer_short] => 
+)
+
+
+[2025-11-22 21:06:19] ADD_QUESTION: quiz_id=8 insert_id=8 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => WHAT IS ME?
+    [question_type] => mcq
+    [options] => A. ITS YOU
+B. ITS US
+C. ITS WE
+D. HAYAYAY
+    [correct_answer] => A. ITS YOU
+    [correct_answer_short] => 
+)
+
+
+[2025-11-22 21:09:05] ADD_QUESTION: quiz_id=8 insert_id=9 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => WHO IS ME
+
+
+    [question_type] => mcq
+    [options] => A. IT IS YOU!
+B. IT IS US
+C. IT IS WE
+D. NAH
+    [correct_answer] => A. IT IS YOU!
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 07:46:49] ADD_QUESTION: quiz_id=9 insert_id=10 execError=(none)
+POST:Array
+(
+    [quiz_id] => 9
+    [question_text] => HAHAHA ANO NA
+    [question_type] => mcq
+    [options] => A. EWAN
+B. GEC
+C. GAGA
+D. ASDASD
+    [correct_answer] => A. EWAN
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 09:18:51] ADD_QUESTION: quiz_id=12 insert_id=11 execError=(none)
+POST:Array
+(
+    [quiz_id] => 12
+    [question_text] => HAHAHA
+    [question_type] => mcq
+    [options] => A. B
+B. A
+C. C
+D. D
+    [correct_answer] => A. B
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 09:50:02] ADD_QUESTION: quiz_id=13 insert_id=12 execError=(none)
+POST:Array
+(
+    [quiz_id] => 13
+    [question_text] => asdasd
+    [question_type] => mcq
+    [options] => A. B
+B. D
+C. B
+D. A
+    [correct_answer] => A. B
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 09:57:30] ADD_QUESTION: quiz_id=14 insert_id=13 execError=(none)
+POST:Array
+(
+    [quiz_id] => 14
+    [question_text] => 1+1 = ?
+    [question_type] => mcq
+    [options] => A. 2
+B. 3
+C. 4
+D. 5
+    [correct_answer] => A. 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 10:09:46] ADD_QUESTION: quiz_id=16 insert_id=14 execError=(none)
+POST:Array
+(
+    [quiz_id] => 16
+    [question_text] => where do we live?
+    [question_type] => short
+    [options] => 
+    [correct_answer] => 
+    [correct_answer_short] => Earth
+)
+
+
+[2025-11-24 10:18:10] ADD_QUESTION: quiz_id=17 insert_id=15 execError=(none)
+POST:Array
+(
+    [quiz_id] => 17
+    [question_text] => aaa
+    [question_type] => mcq
+    [options] => A. B
+B. D
+C. A
+D. C
+    [correct_answer] => D. C
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 10:28:23] ADD_QUESTION: quiz_id=18 insert_id=16 execError=(none)
+POST:Array
+(
+    [quiz_id] => 18
+    [question_text] => 1+1 = ?
+    [question_type] => mcq
+    [options] => 1
+2
+3
+4
+    [correct_answer] => 1
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 10:33:28] ADD_QUESTION: quiz_id=19 insert_id=17 execError=(none)
+POST:Array
+(
+    [quiz_id] => 19
+    [question_text] => aaa
+    [question_type] => mcq
+    [options] => aaaa
+bbb
+ccc
+ddd
+    [correct_answer] => aaaa
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 11:20:37] ADD_QUESTION: quiz_id=20 insert_id=18 execError=(none)
+POST:Array
+(
+    [quiz_id] => 20
+    [question_text] => what are u
+    [question_type] => mcq
+    [options] => me 
+us 
+we
+me
+    [correct_answer] => me 
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 18:36:46] ADD_QUESTION: quiz_id=5 insert_id=2 execError=(none)
+POST:Array
+(
+    [quiz_id] => 5
+    [question_text] => hii how are ya
+    [question_type] => mcq
+    [options] => good
+bad
+not feeling food
+great
+    [correct_answer] => good
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 19:10:51] ADD_QUESTION: quiz_id=6 insert_id=3 execError=(none)
+POST:Array
+(
+    [quiz_id] => 6
+    [question_text] => 1+1 = ?
+    [question_type] => mcq
+    [options] => 2
+3
+4
+5
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-24 19:14:43] ADD_QUESTION: quiz_id=7 insert_id=4 execError=(none)
+POST:Array
+(
+    [quiz_id] => 7
+    [question_text] => 2+2 = ?
+    [question_type] => mcq
+    [options] => 4
+6
+8
+10
+    [correct_answer] => 4
+    [correct_answer_short] => 
+)
+
+
+[2025-11-25 01:36:48] ADD_QUESTION: quiz_id=9 insert_id=5 execError=(none)
+POST:Array
+(
+    [quiz_id] => 9
+    [question_text] => 1 + 1 = ?
+
+
+
+    [question_type] => mcq
+    [options] => 2
+3
+4
+5
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-28 10:40:51] ADD_QUESTION: quiz_id=25 insert_id=6 execError=(none)
+POST:Array
+(
+    [quiz_id] => 25
+    [question_text] => 1 + 1 = ?
+    [question_type] => mcq
+    [options] => A. 1
+B. 2
+C. 3
+4. D
+    [correct_answer] => B. 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-28 12:14:37] ADD_QUESTION: quiz_id=26 insert_id=7 execError=(none)
+POST:Array
+(
+    [quiz_id] => 26
+    [question_text] => 1 + 1 = ?
+    [question_type] => mcq
+    [options] => 2
+4
+6
+8
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 03:45:46] ADD_QUESTION: quiz_id=1 insert_id=1 execError=(none)
+POST:Array
+(
+    [quiz_id] => 1
+    [question_text] => 1 + 1 = ?
+    [question_type] => mcq
+    [options] => 2
+4
+6
+8
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 04:03:26] ADD_QUESTION: quiz_id=2 insert_id=2 execError=(none)
+POST:Array
+(
+    [quiz_id] => 2
+    [question_text] => hehe
+    [question_type] => mcq
+    [options] => 1
+2
+3
+4
+5
+    [correct_answer] => 1
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 04:34:59] ADD_QUESTION: quiz_id=5 insert_id=3 execError=(none)
+POST:Array
+(
+    [quiz_id] => 5
+    [question_text] => 1 + 1 = ?
+    [question_type] => mcq
+    [options] => 2 
+4
+6
+8
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 04:36:50] ADD_QUESTION: quiz_id=6 insert_id=4 execError=(none)
+POST:Array
+(
+    [quiz_id] => 6
+    [question_text] => 1 + 2 = ?
+    [question_type] => mcq
+    [options] => 3
+6
+9
+12
+    [correct_answer] => 3
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 04:43:17] ADD_QUESTION: quiz_id=6 insert_id=5 execError=(none)
+POST:Array
+(
+    [quiz_id] => 6
+    [question_text] => dad
+    [question_type] => mcq
+    [options] => 1
+2
+4
+5
+6
+    [correct_answer] => 1
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 04:43:31] ADD_QUESTION: quiz_id=6 insert_id=6 execError=(none)
+POST:Array
+(
+    [quiz_id] => 6
+    [question_text] => 1
+
+
+
+    [question_type] => mcq
+    [options] => 2
+4
+5
+6
+7
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 04:43:45] ADD_QUESTION: quiz_id=6 insert_id=7 execError=(none)
+POST:Array
+(
+    [quiz_id] => 6
+    [question_text] => how
+
+
+    [question_type] => mcq
+    [options] => idk
+haha
+12
+12
+
+    [correct_answer] => idk
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:06:25] ADD_QUESTION: quiz_id=7 insert_id=8 execError=(none)
+POST:Array
+(
+    [quiz_id] => 7
+    [question_text] => 1 + 1 = ?
+    [question_type] => mcq
+    [options] => 2
+4
+6
+8
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:06:45] ADD_QUESTION: quiz_id=7 insert_id=9 execError=(none)
+POST:Array
+(
+    [quiz_id] => 7
+    [question_text] => 2 + 2 = ?
+    [question_type] => mcq
+    [options] => 4
+8
+12
+16
+    [correct_answer] => 4
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:07:11] ADD_QUESTION: quiz_id=7 insert_id=10 execError=(none)
+POST:Array
+(
+    [quiz_id] => 7
+    [question_text] => 10 + 10 = ?
+    [question_type] => mcq
+    [options] => 20
+18
+15
+19
+    [correct_answer] => 20
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:07:27] ADD_QUESTION: quiz_id=7 insert_id=11 execError=(none)
+POST:Array
+(
+    [quiz_id] => 7
+    [question_text] => 100 + 100 = ?
+    [question_type] => mcq
+    [options] => 200
+400
+500
+600
+    [correct_answer] => 200
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:14:15] ADD_QUESTION: quiz_id=8 insert_id=12 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => 1 + 1 = ?
+    [question_type] => mcq
+    [options] => 2
+4
+6
+8
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:14:32] ADD_QUESTION: quiz_id=8 insert_id=13 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => 2 + 2 = ?
+    [question_type] => mcq
+    [options] => 4  
+6
+8
+10
+    [correct_answer] => 4
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:14:48] ADD_QUESTION: quiz_id=8 insert_id=14 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => 10 + 10 = ?
+    [question_type] => mcq
+    [options] => 20
+40
+60
+100
+    [correct_answer] => 20
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 05:15:09] ADD_QUESTION: quiz_id=8 insert_id=15 execError=(none)
+POST:Array
+(
+    [quiz_id] => 8
+    [question_text] => 100 + 100 = ?
+    [question_type] => mcq
+    [options] => 200
+400
+600
+1000
+
+    [correct_answer] => 200
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 06:30:41] ADD_QUESTION: quiz_id=11 insert_id=16 execError=(none)
+POST:Array
+(
+    [quiz_id] => 11
+    [question_text] => 1
+    [question_type] => mcq
+    [options] => 1
+2
+3
+4
+5
+    [correct_answer] => 1
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 06:33:05] ADD_QUESTION: quiz_id=12 insert_id=17 execError=(none)
+POST:Array
+(
+    [quiz_id] => 12
+    [question_text] => 1 + 2 = ?
+    [question_type] => mcq
+    [options] => 3
+5
+6
+7
+8
+    [correct_answer] => 3
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 06:35:29] ADD_QUESTION: quiz_id=13 insert_id=18 execError=(none)
+POST:Array
+(
+    [quiz_id] => 13
+    [question_text] => yoww
+    [question_type] => mcq
+    [options] => HEY
+HI
+HOI
+NAH
+HI
+    [correct_answer] => HEY
+    [correct_answer_short] => 
+)
+
+
+[2025-11-29 07:28:34] ADD_QUESTION: quiz_id=15 insert_id=19 execError=(none)
+POST:Array
+(
+    [quiz_id] => 15
+    [question_text] => 1 plus 1
+    [question_type] => mcq
+    [options] => 2 
+4
+6
+7
+
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
+[2025-12-09 21:43:14] ADD_QUESTION: quiz_id=17 insert_id=20 execError=(none)
+POST:Array
+(
+    [quiz_id] => 17
+    [question_text] => chingching
+    [question_type] => mcq
+    [options] => a.hotdog
+b.cheese.
+c.tocino
+    [correct_answer] => a
+    [correct_answer_short] => 
+)
+
+
+[2025-12-09 21:44:19] ADD_QUESTION: quiz_id=17 insert_id=21 execError=(none)
+POST:Array
+(
+    [quiz_id] => 17
+    [question_text] => sdasd
+    [question_type] => mcq
+    [options] => hotdog/cheese/tocino
+    [correct_answer] => hotdog
+    [correct_answer_short] => 
+)
+
+
+[2025-12-09 21:47:32] ADD_QUESTION: quiz_id=17 insert_id=22 execError=(none)
+POST:Array
+(
+    [quiz_id] => 17
+    [question_text] => gutoim
+    [question_type] => mcq
+    [options] => hotdog
+tocino
+egg
+    [correct_answer] => egg
+    [correct_answer_short] => 
+)
+
+

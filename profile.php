@@ -19,16 +19,16 @@
     <nav class="navbar">
       <div class="navbar-content">
         <div class="navbar-brand">
-          <h1 class="brand-logo"><img src="assets/BatStateU-NEU-Logo-1-300x282.png" alt="BatStateU" class="brand-logo-img"> BatStateU Portal</h1>
+          <h1 class="brand-logo"><img src="assets/BatStateU-NEU-Logo-1-300x282.png" alt="BatStateU" class="brand-logo-img">  Student Portal</h1>
         </div>
         <div class="navbar-menu">
-          <a href="index.php" class="nav-link">Dashboard</a>
-          <a href="courses.php" class="nav-link">Courses</a>
+         <a href="index.php" class="nav-link active">Dashboard</a>
+          <a href="courses.php" class="nav-link">Quizzes</a>
           <a href="assignments.php" class="nav-link">Assignments</a>
           <a href="grades.php" class="nav-link">Grades</a>
-          <a href="announcements.php" class="nav-link">Announcements</a>
-          <a href="schedule.php" class="nav-link">Schedule</a>
-          <a href="messages.php" class="nav-link">Messages</a>
+          <a href="announcements.php" class="nav-link">Performance Tasks</a>
+          <a href="schedule.php" class="nav-link">Activities</a>
+          <a href="messages.php" class="nav-link">Learning Materials</a>
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"> <span class="theme-icon">🌙</span></button>
           <button type="button" class="btn-logout" id="logoutBtn" data-logout>🚪 Logout</button>
         </div>
@@ -48,6 +48,11 @@
               <div id="headerName" style="font-weight:700;font-size:1.1rem;color:var(--text-primary);overflow:hidden;white-space:nowrap;text-overflow:ellipsis"></div>
               <div id="headerStudentId" style="color:var(--text-secondary);font-size:0.9rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"></div>
             </div>
+          </div>
+
+          <div style="margin-bottom:1rem;">
+            <div id="headerProgram" style="color:var(--text-secondary);font-size:0.9rem;"></div>
+            <div id="headerSections" style="color:var(--text-secondary);font-size:0.9rem;"></div>
           </div>
 
           <form id="profileForm">
@@ -102,6 +107,16 @@
               <option>Bachelor of Arts in Education</option>
             </select>
           </div>
+          <div class="form-group">
+            <label for="profileYear">Year</label>
+            <select id="profileYear" required>
+              <option value="">Select year</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </div>
             <div style="display:flex;gap:0.5rem;margin-top:1rem;align-items:center;">
             <button type="submit" class="btn-primary">Save Profile</button>
             <a href="index.php" class="btn-secondary">Cancel</a>
@@ -147,11 +162,86 @@
             return
           }
           const u = JSON.parse(raw)
+          // normalize sections to an array so display works whether stored as array or CSV string
+          try {
+            if (u && u.sections && !Array.isArray(u.sections)) {
+              if (typeof u.sections === 'string') {
+                // split by comma and trim
+                u.sections = u.sections.split(',').map(s => s.trim()).filter(Boolean)
+              } else if (typeof u.sections === 'object' && u.sections !== null) {
+                // if stored as object with numeric keys, try to convert to array
+                try { u.sections = Object.values(u.sections).map(String).map(s=>s.trim()).filter(Boolean) } catch(e) { u.sections = [] }
+              } else {
+                u.sections = []
+              }
+            }
+            if (!u.sections || (Array.isArray(u.sections) && u.sections.length === 0)) {
+              // fallback: try to find the full user entry from the users list stored in localStorage
+              try {
+                const usersRaw = localStorage.getItem('batstate_users') || '[]'
+                const users = JSON.parse(usersRaw)
+                if (Array.isArray(users) && users.length) {
+                  const match = users.find(x => (x.email && x.email.toLowerCase() === (u.email||'').toLowerCase()) || (x.sr_code && String(x.sr_code) === String(u.sr_code)) || (x.id && String(x.id) === String(u.id)))
+                  if (match && match.sections) {
+                    if (Array.isArray(match.sections)) u.sections = match.sections
+                    else if (typeof match.sections === 'string') u.sections = match.sections.split(',').map(s=>s.trim()).filter(Boolean)
+                  }
+                }
+              } catch (er) { /* ignore */ }
+            }
+            if (!u.sections) u.sections = []
+          } catch(e) { u.sections = u.sections || [] }
           document.getElementById('profileName').value = u.name || ''
+          document.getElementById('profileYear').value = u.year || ''
           const sidEl = document.getElementById('profileStudentId')
-          if (sidEl) sidEl.textContent = u.studentId || u.id || ''
+          if (sidEl) sidEl.textContent = u.sr_code || u.studentId || u.id || ''
           document.getElementById('profileEmail').value = u.email || ''
-          document.getElementById('profileProgram').value = u.program || ''
+          // Render Program/Year/Sections as plain non-editable text for clarity
+          try {
+            const progEl = document.getElementById('profileProgram')
+            if (progEl) {
+              const txt = document.createElement('div')
+              txt.className = 'profile-readonly-text'
+              txt.style.padding = '10px 12px'
+              txt.style.background = 'var(--bg-input)'
+              txt.style.borderRadius = '6px'
+              txt.style.color = 'var(--text-primary)'
+              txt.textContent = u.program || ''
+              progEl.parentNode.replaceChild(txt, progEl)
+            }
+          } catch (e) {}
+
+          // Render Year as text
+          try {
+            const yearEl = document.getElementById('profileYear')
+            if (yearEl) {
+              const txty = document.createElement('div')
+              txty.className = 'profile-readonly-text'
+              txty.style.padding = '10px 12px'
+              txty.style.background = 'var(--bg-input)'
+              txty.style.borderRadius = '6px'
+              txty.style.color = 'var(--text-primary)'
+              txty.textContent = (u.year ? (u.year + (u.year === '1' ? 'st Year' : ' Year')) : '')
+              yearEl.parentNode.replaceChild(txty, yearEl)
+            }
+          } catch (e) {}
+
+          // populate sections display: ensure we show the user's selected sections (from registration)
+          try {
+            // headerSections shown above will use u.sections; but also show a readonly block for the profile form area if needed
+            const profileSectionsContainer = document.getElementById('profileSections')
+            if (profileSectionsContainer) {
+              // replace with a readonly list showing selected sections
+              const div = document.createElement('div')
+              div.className = 'profile-readonly-text'
+              div.style.padding = '10px 12px'
+              div.style.background = 'var(--bg-input)'
+              div.style.borderRadius = '6px'
+              div.style.color = 'var(--text-primary)'
+              div.textContent = (Array.isArray(u.sections) && u.sections.length) ? u.sections.join(', ') : ''
+              profileSectionsContainer.parentNode.replaceChild(div, profileSectionsContainer)
+            }
+          } catch (e) {}
           if (u.avatar) {
             avatarImg.src = u.avatar
             avatarImg.style.display = 'block'
@@ -161,7 +251,20 @@
             if (headerAvatar) { headerAvatar.src = ''; headerAvatar.style.display = 'none' }
           }
           if (headerName) headerName.textContent = u.name || ''
-          if (headerStudentId) headerStudentId.textContent = u.studentId || ''
+          if (headerStudentId) headerStudentId.textContent = u.sr_code || u.studentId || ''
+          const headerProgramEl = document.getElementById('headerProgram')
+          const headerSectionsEl = document.getElementById('headerSections')
+          if (headerProgramEl) headerProgramEl.textContent = (u.program ? (u.program + (u.year ? ' • Year ' + u.year : '')) : '')
+          if (headerSectionsEl) {
+            const secList = (Array.isArray(u.sections) && u.sections.length) ? u.sections.join(', ') : 'None'
+            const label = (Array.isArray(u.sections) && u.sections.length === 1) ? 'Section: ' : 'Sections: '
+            headerSectionsEl.textContent = label + secList
+          }
+          // enable form controls (except program/year/sections which should remain read-only)
+          try {
+            const controls = form.querySelectorAll('input, textarea, button')
+            controls.forEach(c => { if (!c.classList.contains('btn-secondary')) c.disabled = false })
+          } catch (e) {}
         } catch (e) {}
       }
 
@@ -272,7 +375,11 @@
 
         const effectiveName = name || (current && current.name) || ''
         const effectiveEmail = email || (current && current.email) || ''
-        const effectiveStudentId = studentId || (current && (current.studentId || current.id)) || ''
+        // prefer sr_code where available
+        const effectiveStudentId = studentId || (current && (current.sr_code || current.studentId || current.id)) || ''
+        // program/year/sections are read-only; preserve current values from localStorage instead of reading DOM
+        const profileYearVal = (current && current.year) || ''
+        const profileSections = (current && Array.isArray(current.sections) ? current.sections : [])
 
         if (!effectiveName || !effectiveEmail || !effectiveStudentId) {
           showMessage('Please complete required fields', 'error')
@@ -281,8 +388,8 @@
 
         const studentIdFieldIsEditable = studentIdEl && ((studentIdEl.tagName || '').toLowerCase() === 'input' || (studentIdEl.tagName || '').toLowerCase() === 'textarea' || studentIdEl.isContentEditable)
         if (studentIdFieldIsEditable) {
-          const dupSid = users.find(u => (u.studentId||'').toString().trim() === effectiveStudentId && ((u.id||u.studentId) !== currentId))
-          if (dupSid) { showMessage('Student ID already in use by another account', 'error'); return }
+          const dupSid = users.find(u => ((u.sr_code||u.studentId)||'').toString().trim() === effectiveStudentId && ((u.id||u.studentId) !== currentId))
+          if (dupSid) { showMessage('SR-CODE already in use by another account', 'error'); return }
         }
 
         const dupEmail = users.find(u => (u.email||'').toString().toLowerCase() === effectiveEmail && ((u.id||u.studentId) !== currentId))
@@ -292,7 +399,8 @@
         if (currentId) {
           users = users.map(u => {
             if ((u.id || u.studentId) == currentId) {
-              updated = Object.assign({}, u, { name: effectiveName, studentId: effectiveStudentId, email: effectiveEmail, program })
+              // Do not allow changing program/year/sections here; keep existing stored values
+              updated = Object.assign({}, u, { name: effectiveName, studentId: effectiveStudentId, sr_code: effectiveStudentId, email: effectiveEmail, program: u.program || program, year: profileYearVal, sections: profileSections })
               if (newPassword || confirmNewPassword) {
                 if (!currentPasswordInput) {
                   showMessage('Enter your current password to change it', 'error')
@@ -323,7 +431,7 @@
           })
         }
         if (!updated) {
-          updated = { id: Date.now().toString(), name: effectiveName, studentId: effectiveStudentId, email: effectiveEmail, program, password: current && current.password ? current.password : '' }
+          updated = { id: Date.now().toString(), name: effectiveName, studentId: effectiveStudentId, sr_code: effectiveStudentId, email: effectiveEmail, program: (current && current.program) || program, year: profileYearVal, sections: profileSections, password: current && current.password ? current.password : '' }
           users.push(updated)
         }
         if (avatarInput && avatarInput.dataset && avatarInput.dataset.preview) {
@@ -341,7 +449,7 @@
             else { headerAvatar.src = ''; headerAvatar.style.display = 'none' }
           }
           if (headerName) headerName.textContent = updated.name || ''
-          if (headerStudentId) headerStudentId.textContent = updated.studentId || ''
+          if (headerStudentId) headerStudentId.textContent = updated.sr_code || updated.studentId || ''
           if (avatarImg) { avatarImg.src = updated.avatar || ''; avatarImg.style.display = updated.avatar ? 'block' : 'none' }
 
           const profileAvatarEl = document.querySelector('.profile-avatar')
@@ -401,7 +509,7 @@
             if (headerAvatar) { headerAvatar.src = restored.avatar || ''; headerAvatar.style.display = restored.avatar ? 'block' : 'none' }
             if (avatarImg) { avatarImg.src = restored.avatar || ''; avatarImg.style.display = restored.avatar ? 'block' : 'none' }
             if (headerName) headerName.textContent = restored.name || ''
-            if (headerStudentId) headerStudentId.textContent = restored.studentId || ''
+            if (headerStudentId) headerStudentId.textContent = restored.sr_code || restored.studentId || ''
             const profileAvatarEl = document.querySelector('.profile-avatar')
             if (profileAvatarEl) {
               profileAvatarEl.innerHTML = restored.avatar ? `<img src="${restored.avatar}" alt="${(restored.name||'avatar')}">` : (restored.name||'').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()
@@ -426,17 +534,104 @@
         try {
           const cur = JSON.parse(localStorage.getItem('batstate_current_user') || 'null')
           if (!cur) { showMessage('No signed-in user to delete', 'error'); return }
+
+          const timeoutMs = (window && window.DELETE_UNDO_TIMEOUT_MS) ? window.DELETE_UNDO_TIMEOUT_MS : 8000
+
+          // show pending deletion banner and wait for user's choice (Undo or Dismiss)
+          const existing = document.getElementById('pendingDeleteBanner')
+          if (existing) existing.remove()
+          const b = document.createElement('div')
+          b.id = 'pendingDeleteBanner'
+          b.className = 'undo-banner'
+          b.innerHTML = `<div class="undo-content">Account deletion pending. <button id="undoBtn" class="btn-secondary">Undo</button> <button id="dismissDelete" class="btn-secondary">Dismiss</button></div>`
+          document.body.appendChild(b)
+
+          // store pending deletion so it can be inspected if needed
+          try { sessionStorage.setItem('batstate_pending_deleted_user', JSON.stringify({ user: cur, scheduledAt: Date.now() })) } catch (e) {}
+
+          // function to execute the actual delete (server + local)
+            const executeDelete = function() {
+            try { sessionStorage.removeItem('batstate_pending_deleted_user') } catch (e) {}
+            // choose an identifier for server delete: prefer numeric account id, otherwise email, otherwise studentId
+            const maybeId = cur.id || null
+            const maybeEmail = cur.email || null
+            const maybeStudentId = cur.studentId || null
+            const deleteIdentifier = (maybeId && String(maybeId).match(/^\d+$/)) ? maybeId : (maybeEmail ? maybeEmail : maybeStudentId)
+            const tryServerDelete = deleteIdentifier && String(deleteIdentifier).match(/^\d+$/)
+            if (tryServerDelete) {
+              fetch('delete_action.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: deleteIdentifier })
+              })
+              .then(r => r.json())
+              .then(data => {
+                // save deleted user info for undo restore
+                try { sessionStorage.setItem('batstate_deleted_user', JSON.stringify({ user: cur, deletedAt: Date.now() })) } catch (e) {}
+                // perform local cleanup
+                finalizeLocalDelete(cur)
+                window.location.replace('login.php?account_deleted=1')
+              })
+              .catch(err => {
+                console.error('Server delete error', err)
+                try { sessionStorage.setItem('batstate_deleted_user', JSON.stringify({ user: cur, deletedAt: Date.now() })) } catch (e) {}
+                finalizeLocalDelete(cur)
+                window.location.replace('login.php?account_deleted=1')
+              })
+            } else {
+              // try server delete by non-numeric identifier (email or studentId)
+              fetch('delete_action.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: deleteIdentifier })
+              })
+              .then(r => r.json())
+              .then(data => {
+                try { sessionStorage.setItem('batstate_deleted_user', JSON.stringify({ user: cur, deletedAt: Date.now() })) } catch (e) {}
+                finalizeLocalDelete(cur)
+                window.location.replace('login.php?account_deleted=1')
+              })
+              .catch(err => {
+                // if server delete fails, fall back to local delete
+                try { sessionStorage.setItem('batstate_deleted_user', JSON.stringify({ user: cur, deletedAt: Date.now() })) } catch (e) {}
+                finalizeLocalDelete(cur)
+                window.location.replace('login.php?account_deleted=1')
+              })
+            }
+          }
+
+          // schedule automatic delete after timeout
+          let to = setTimeout(executeDelete, timeoutMs)
+
+          // bind undo and dismiss
+          const undoBtn = document.getElementById('undoBtn')
+          const dismissBtn = document.getElementById('dismissDelete')
+          undoBtn && undoBtn.addEventListener('click', function() {
+            clearTimeout(to)
+            try { sessionStorage.removeItem('batstate_pending_deleted_user') } catch (e) {}
+            const ex = document.getElementById('pendingDeleteBanner')
+            if (ex) ex.remove()
+            showMessage('Account deletion cancelled', 'info')
+          })
+          dismissBtn && dismissBtn.addEventListener('click', function() {
+            clearTimeout(to)
+            const ex = document.getElementById('pendingDeleteBanner')
+            if (ex) ex.remove()
+            executeDelete()
+          })
+
+        } catch (err) { console.error(err); showMessage('Delete failed', 'error') }
+      }
+
+      function finalizeLocalDelete(cur) {
+        try {
           let users = JSON.parse(localStorage.getItem('batstate_users') || '[]')
           const curKey = String(cur.id || cur.studentId || '')
           const remaining = users.filter(u => String(u.id || u.studentId || '') !== curKey)
           try { localStorage.setItem('batstate_users', JSON.stringify(remaining)) } catch (e) { console.error('failed to update users', e) }
-
           try { sessionStorage.setItem('batstate_deleted_user', JSON.stringify({ user: cur, deletedAt: Date.now() })) } catch (e) { console.error('failed to save deleted user', e) }
-
           localStorage.removeItem('batstate_current_user')
-
-          try { showUndoBanner(5000, cur) } catch (e) { window.location.replace('login.php?account_deleted=1') }
-        } catch (err) { console.error(err); showMessage('Delete failed', 'error') }
+        } catch (e) { console.error('finalizeLocalDelete failed', e) }
       }
 
       if (deleteBtn) {

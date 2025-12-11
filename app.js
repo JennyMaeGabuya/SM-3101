@@ -8,9 +8,9 @@ if (window.__APP_LOADED) {
   // Adjust path if your server mounts `public/` differently (e.g., '/js/gx-animations.js').
   try {
     if (!window.GX_DISABLE_ANIM) {
-      (function(){
-  var s = document.createElement('script')
-  s.src = 'js/gx-animations.js'
+      (function () {
+        var s = document.createElement('script')
+        s.src = 'js/gx-animations.js'
         s.async = true
         s.defer = true
         document.head.appendChild(s)
@@ -25,7 +25,7 @@ if (window.__APP_LOADED) {
   try {
     if (!window.__GX_LOADER_ATTEMPTED) {
       window.__GX_LOADER_ATTEMPTED = true
-      setTimeout(function(){
+      setTimeout(function () {
         try {
           var reduced = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
           if (window.GX || window.GX_DISABLE_ANIM || reduced) return
@@ -45,147 +45,586 @@ if (window.__APP_LOADED) {
 
   // State Management
   const state = {
-  currentFilter: "all",
-  searchQuery: "",
-  currentPage: getCurrentPage(),
-}
-
-// Data Initialization
-// If data arrays are provided by `portal-data.js` (or another loader), reuse them.
-// Use a safe guard (try/catch) to detect existing global bindings without throwing
-let __tmp
-try { __tmp = coursesData } catch (e) { __tmp = undefined }
-const coursesData = __tmp || []
-try { __tmp = assignmentsData } catch (e) { __tmp = undefined }
-const assignmentsData = __tmp || []
-try { __tmp = announcementsData } catch (e) { __tmp = undefined }
-const announcementsData = __tmp || []
-try { __tmp = scheduleData } catch (e) { __tmp = undefined }
-const scheduleData = __tmp || []
-try { __tmp = gradesData } catch (e) { __tmp = undefined }
-const gradesData = __tmp || []
-try { __tmp = messagesData } catch (e) { __tmp = undefined }
-const messagesData = __tmp || []
-__tmp = undefined
-
-// NOTE: logout() logic has been centralized in auth.js as window.authLogout().
-// The app relies on that exported function; if it's not present, handlers fall back
-// to a direct navigation to the login page.
-
-// Show a small transient overlay while signing out to improve UX.
-function showSigningOutOverlay() {
-  try {
-    if (document.getElementById('signout-overlay')) return
-    const el = document.createElement('div')
-    el.id = 'signout-overlay'
-    el.className = 'signout-overlay'
-    el.textContent = 'Signing you out…'
-    Object.assign(el.style, {
-      position: 'fixed',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      padding: '1rem 1.5rem',
-      background: 'rgba(0,0,0,0.85)',
-      color: '#fff',
-      borderRadius: '8px',
-      fontWeight: '600',
-      zIndex: 10000,
-      boxShadow: '0 6px 18px rgba(0,0,0,0.4)'
-    })
-    document.body.appendChild(el)
-    // remove after a short time in case redirect doesn't occur instantly
-    setTimeout(() => {
-      try { el.remove() } catch (e) {}
-    }, 2500)
-  } catch (e) {
-    // ignore overlay failures
+    currentFilter: "all",
+    searchQuery: "",
+    currentPage: getCurrentPage(),
   }
-}
 
-function getCurrentUser() {
-  try {
-    const raw = localStorage.getItem('batstate_current_user')
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    // ensure we return a clean object with expected fields
-    return {
-      id: parsed.id || parsed.studentId || null,
-      name: parsed.name || parsed.fullName || parsed.username || null,
-      studentId: parsed.studentId || parsed.id || null,
-      program: parsed.program || null,
-      email: parsed.email || null,
-      avatar: parsed.avatar || null,
-      // include the original object for other uses
-      _raw: parsed
+  // Data Initialization
+  // If data arrays are provided by `portal-data.js` (or another loader), reuse them.
+  // Use a safe guard (try/catch) to detect existing global bindings without throwing
+  let __tmp
+  try { __tmp = coursesData } catch (e) { __tmp = undefined }
+  const coursesData = __tmp || []
+  try { __tmp = assignmentsData } catch (e) { __tmp = undefined }
+  const assignmentsData = __tmp || []
+  try { __tmp = announcementsData } catch (e) { __tmp = undefined }
+  const announcementsData = __tmp || []
+  try { __tmp = scheduleData } catch (e) { __tmp = undefined }
+  const scheduleData = __tmp || []
+  try { __tmp = gradesData } catch (e) { __tmp = undefined }
+  const gradesData = __tmp || []
+  try { __tmp = messagesData } catch (e) { __tmp = undefined }
+  const messagesData = __tmp || []
+  __tmp = undefined
+
+  // NOTE: logout() logic has been centralized in auth.js as window.authLogout().
+  // The app relies on that exported function; if it's not present, handlers fall back
+  // to a direct navigation to the login page.
+
+  // Show a small transient overlay while signing out to improve UX.
+  function showSigningOutOverlay() {
+    try {
+      if (document.getElementById('signout-overlay')) return
+      const el = document.createElement('div')
+      el.id = 'signout-overlay'
+      el.className = 'signout-overlay'
+      el.textContent = 'Signing you out…'
+      Object.assign(el.style, {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        padding: '1rem 1.5rem',
+        background: 'rgba(0,0,0,0.85)',
+        color: '#fff',
+        borderRadius: '8px',
+        fontWeight: '600',
+        zIndex: 10000,
+        boxShadow: '0 6px 18px rgba(0,0,0,0.4)'
+      })
+      document.body.appendChild(el)
+      // remove after a short time in case redirect doesn't occur instantly
+      setTimeout(() => {
+        try { el.remove() } catch (e) { }
+      }, 2500)
+    } catch (e) {
+      // ignore overlay failures
     }
-  } catch (e) {
-    return null
   }
-}
 
-function calculateGPA() {
-  // Implement calculateGPA functionality here
-  return 3.5 // Placeholder GPA
-}
+  // Helper: fetch notifications and render them into the modal list (used by refresh/tab switch)
+  function fetchAndRenderNotificationsInModal() {
+    try {
+      const modal = document.getElementById('notifModal')
+      if (!modal) return
+      const list = modal.querySelector('#notifList')
+      if (!list) return
+      list.innerHTML = '<div class="notif-loading">Loading…</div>'
+      fetch('/LearnHub/api/notifications.php', { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(d => {
+          if (!d || !d.ok) {
+            // even if ok=false, the payload may contain notifications (defensive)
+            const notifs = d && d.notifications ? d.notifications : []
+            window.__notifications = notifs
+            renderNotificationsToModal(notifs)
+            return
+          }
+          window.__notifications = d.notifications || []
+          renderNotificationsToModal(window.__notifications)
+        }).catch(e => {
+          const notifs = window.__notifications || []
+          renderNotificationsToModal(notifs)
+        })
+    } catch (e) { console.warn('fetchAndRenderNotificationsInModal failed', e) }
+  }
 
-// Initialize
-document.addEventListener("DOMContentLoaded", () => {
-  loadTheme()
-  setupEventListeners()
-  renderPageContent()
-  updateNavigation()
-  displayUserInfo()
-  renderProfileMenu()
-  // Render the realtime clock in the navbar (skip on login/register pages)
-  try { if (typeof renderClock === 'function') renderClock() } catch (e) { /* ignore */ }
-  // render any .user-avatar placeholders across pages
-  if (typeof renderUserAvatars === 'function') try { renderUserAvatars() } catch (e) {}
-  // Prevent a brief disappearance: mark gx-reveal items as revealed immediately so
-  // when the animation library later adds `html.js` they won't be hidden by CSS.
-  try {
-    document.querySelectorAll('.gx-reveal').forEach(el => el.classList.add('is-revealed'))
-  } catch (e) { /* ignore */ }
-  // Initialize page transitions (fade-in on load, fade-out on nav)
-  try { setupPageTransitions() } catch (e) { /* ignore if setup missing */ }
-})
-
-// Render avatars into any elements with class 'user-avatar'
-function renderUserAvatars() {
-  try {
-    const user = getCurrentUser()
-  if (!user) return
-  document.querySelectorAll('.user-avatar').forEach(el => {
-      if (user.avatar) {
-        // set image element
-        el.innerHTML = `<img src="${escapeHtml(user.avatar)}" class="user-avatar-img" alt="${escapeHtml(user.name||'avatar')}">`
-      } else {
-        // fallback to initials
-        const initials = (user.name || '').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()
-        el.textContent = initials
+  function renderNotificationsToModal(notifs) {
+    try {
+      const modal = document.getElementById('notifModal')
+      if (!modal) return
+      const list = modal.querySelector('#notifList')
+      if (!list) return
+      // apply client-side filter (default: all)
+      const filter = window.__notifFilter || 'all'
+      const filtered = (filter === 'all') ? notifs : (notifs || []).filter(n => {
+        const t = n.related && n.related.type ? String(n.related.type).toLowerCase() : ''
+        if (!t) {
+          // fallback: infer from title prefixes
+          const tt = (n.title || '').toLowerCase()
+          if (tt.indexOf('new quiz:') === 0) return filter === 'quiz'
+          if (tt.indexOf('new activity:') === 0) return filter === 'activity'
+          if (tt.indexOf('new performance task:') === 0) return filter === 'task'
+          if (tt.indexOf('new material:') === 0 || tt.indexOf('new learning material:') === 0) return filter === 'material'
+          return false
+        }
+        if (filter === 'quiz') return t === 'quiz'
+        if (filter === 'activity') return t === 'activity'
+        if (filter === 'task') return t === 'task'
+        if (filter === 'material') return t === 'material'
+        return true
+      })
+      // reuse existing rendering logic: call openNotificationsModal's internal renderer by
+      // temporarily assigning window.__notifications and reusing the same code path.
+      // Simpler: directly construct HTML here.
+      if (!filtered || filtered.length === 0) {
+        list.innerHTML = `<div class="notif-empty">No notifications</div>`
+        const sub = modal.querySelector('.notif-subheader')
+        if (sub) sub.textContent = 'Recent Notifications — 0 total'
+        const bell = document.getElementById('notifBell')
+        if (bell) { const cnt = bell.querySelector('.notif-count'); if (cnt) cnt.textContent = '' }
+        return
       }
-    })
-  } catch (e) { console.warn('renderUserAvatars failed', e) }
-}
+      const total = filtered.length
+      const unread = filtered.filter(n => !n.read).length
+      const sub = modal.querySelector('.notif-subheader')
+      if (sub) sub.textContent = `Recent Notifications — ${total} total, ${unread} unread`
+      const rows = filtered.map(n => {
+        const when = new Date(n.created_at)
+        const ts = when.toLocaleString()
+        const title = escapeHtml(n.title || '')
+        const msg = escapeHtml(n.message || '')
+        const sender = escapeHtml(n.sender || 'Teacher')
+        const readClass = n.read ? 'read' : ''
+        let href = n.related && n.related.href ? String(n.related.href) : ''
+        if (href && !href.startsWith('http') && !href.startsWith('/')) href = '/LearnHub/' + href.replace(/^\/+/, '')
+        const relatedHtml = href ? `<a class="notif-related" href="${escapeHtml(href)}" target="_blank" rel="noopener">Open</a>` : ''
+        return `
+        <div class="notif-item ${readClass}" data-id="${n.id}" tabindex="0">
+          <div class="notif-item-head"><div style="display:flex;gap:10px;align-items:center"><div style="font-weight:700">${title}</div><div style="font-size:0.85rem;color:var(--text-secondary)">by ${sender}</div></div><div class="notif-item-time">${ts}</div></div>
+          <div class="notif-item-body">${msg}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <div>${relatedHtml}</div>
+            <div><button class="btn btn-small btn-ghost notif-mark" data-id="${n.id}">${n.read ? 'Read' : 'Mark as read'}</button></div>
+          </div>
+        </div>`
+      }).join('\n')
+      list.innerHTML = `<div style="padding:8px 12px;color:var(--text-secondary);font-size:0.95rem">Showing ${total} notification${total !== 1 ? 's' : ''} — ${unread} unread</div>` + rows
+      // update bell count
+      const bell = document.getElementById('notifBell')
+      if (bell) {
+        const cntEl = bell.querySelector('.notif-count')
+        if (cntEl) cntEl.textContent = unread > 0 ? unread : ''
+      }
+    } catch (e) { console.warn('renderNotificationsToModal failed', e) }
+  }
 
-// Render a realtime clock into the navbar (skips login/register pages)
-function renderClock() {
-  try {
-    const p = (location && location.pathname) ? location.pathname.toLowerCase() : ''
-    if (p.includes('login.php') || p.includes('register.php')) return
-    const navbarContent = document.querySelector('.navbar-content')
-    if (!navbarContent) return
-    if (document.getElementById('siteClock')) return
-
-    // Ensure navbarContent can be used as positioning context
-    if (getComputedStyle(navbarContent).position === 'static') {
-      navbarContent.style.position = 'relative'
+  function getCurrentUser() {
+    try {
+      const raw = localStorage.getItem('batstate_current_user')
+      if (!raw) return null
+      const parsed = JSON.parse(raw)
+      // ensure we return a clean object with expected fields
+      return {
+        id: parsed.id || parsed.studentId || null,
+        name: parsed.name || parsed.fullName || parsed.username || null,
+        // do not default studentId to account id; prefer explicit studentId only
+        studentId: parsed.studentId || null,
+        sr_code: parsed.sr_code || null,
+        program: parsed.program || null,
+        email: parsed.email || null,
+        avatar: parsed.avatar || null,
+        // include the original object for other uses
+        _raw: parsed
+      }
+    } catch (e) {
+      return null
     }
+  }
 
-    const el = document.createElement('div')
-    el.id = 'siteClock'
-    el.className = 'site-clock'
-    el.innerHTML = `
+  function calculateGPA() {
+    // Implement calculateGPA functionality here
+    return 3.5 // Placeholder GPA
+  }
+
+  // Initialize
+  document.addEventListener("DOMContentLoaded", () => {
+    loadTheme()
+    setupEventListeners()
+    renderPageContent()
+    updateNavigation()
+    displayUserInfo()
+    renderProfileMenu()
+    // fetch and display notification bell
+    try { fetchAndRenderNotifications() } catch (e) { /* ignore */ }
+    // Render the realtime clock in the navbar (skip on login/register pages)
+    try { if (typeof renderClock === 'function') renderClock() } catch (e) { /* ignore */ }
+    // render any .user-avatar placeholders across pages
+    if (typeof renderUserAvatars === 'function') try { renderUserAvatars() } catch (e) { }
+    // Prevent a brief disappearance: mark gx-reveal items as revealed immediately so
+    // when the animation library later adds `html.js` they won't be hidden by CSS.
+    try {
+      document.querySelectorAll('.gx-reveal').forEach(el => el.classList.add('is-revealed'))
+    } catch (e) { /* ignore */ }
+    // Initialize page transitions (fade-in on load, fade-out on nav)
+    // try { setupPageTransitions() } catch (e) { /* ignore if setup missing */ }
+  })
+
+  // Render avatars into any elements with class 'user-avatar'
+  function renderUserAvatars() {
+    try {
+      const user = getCurrentUser()
+      if (!user) return
+      document.querySelectorAll('.user-avatar').forEach(el => {
+        if (user.avatar) {
+          // set image element
+          el.innerHTML = `<img src="${escapeHtml(user.avatar)}" class="user-avatar-img" alt="${escapeHtml(user.name || 'avatar')}">`
+        } else {
+          // fallback to initials
+          const initials = (user.name || '').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+          el.textContent = initials
+        }
+      })
+    } catch (e) { console.warn('renderUserAvatars failed', e) }
+  }
+
+  // Notifications: fetch from API and render bell with unread counter
+  function fetchAndRenderNotifications() {
+    try {
+      // only run on pages with a navbar
+      const menu = document.querySelector('.navbar-content .navbar-menu')
+      if (!menu) return
+
+      // avoid duplicate bell
+      if (document.getElementById('notifBell')) return
+
+      // create placeholder bell element
+      const bell = document.createElement('button')
+      bell.id = 'notifBell'
+      bell.className = 'notif-bell'
+      bell.setAttribute('aria-label', 'Notifications')
+      bell.innerHTML = `<span class="bell-icon">🔔</span><span class="notif-count" aria-hidden="true"></span>`
+
+      // insert before theme toggle or logout
+      const ref = menu.querySelector('.theme-toggle') || menu.querySelector('.btn-logout')
+      if (ref) menu.insertBefore(bell, ref)
+      else menu.appendChild(bell)
+
+      // click opens an in-page notifications modal (no redirect)
+      bell.addEventListener('click', function () {
+        openNotificationsModal()
+      })
+
+      // fetch notifications JSON
+      fetch('/LearnHub/api/notifications.php', { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(data => {
+          if (!data || !data.ok) return
+          const notifs = data.notifications || []
+          // If the server provides per-notification read flags, use them.
+          // Fallback to lastSeen timestamp behavior for older installs.
+          let unread = 0
+          if (notifs.length && typeof notifs[0].read !== 'undefined') {
+            unread = notifs.filter(n => !n.read).length
+          } else {
+            let lastSeen = null
+            try { lastSeen = localStorage.getItem('lastSeenNotifications') } catch (e) { lastSeen = null }
+            const lastSeenTime = lastSeen ? new Date(lastSeen).getTime() : 0
+            unread = notifs.filter(n => new Date(n.created_at).getTime() > lastSeenTime).length
+          }
+          const cntEl = bell.querySelector('.notif-count')
+          if (cntEl) cntEl.textContent = unread > 0 ? unread : ''
+          // optional: store latest notifications on window for later use
+          window.__notifications = notifs
+        })
+        .catch(e => { console.warn('Failed to load notifications', e) })
+    } catch (e) { console.warn('fetchAndRenderNotifications failed', e) }
+  }
+
+  // Build and open a simple accessible modal showing recent notifications.
+  function openNotificationsModal() {
+    try {
+      // Always fetch fresh notifications from the server first so newly created
+      // notifications (created by teachers) appear immediately without a full
+      // page reload. If the fetch fails, fall back to any cached notifications.
+      const ensure = fetch('/LearnHub/api/notifications.php', { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(d => (d && d.ok) ? (d.notifications || []) : (window.__notifications && Array.isArray(window.__notifications) ? window.__notifications : []))
+        .catch(() => (window.__notifications && Array.isArray(window.__notifications) ? window.__notifications : []))
+      ensure.then(notifs => {
+        window.__notifications = notifs
+        // mark seen now (affects unread count computed in fetchAndRenderNotifications)
+        try { localStorage.setItem('lastSeenNotifications', new Date().toISOString()) } catch (e) { }
+        const bell = document.getElementById('notifBell')
+        if (bell) {
+          const cntEl = bell.querySelector('.notif-count')
+          if (cntEl) cntEl.textContent = ''
+        }
+
+        // create modal container if missing
+        let modal = document.getElementById('notifModal')
+        if (!modal) {
+          modal = document.createElement('div')
+          modal.id = 'notifModal'
+          modal.className = 'notif-modal'
+          modal.setAttribute('role', 'dialog')
+          modal.setAttribute('aria-modal', 'true')
+          modal.setAttribute('aria-hidden', 'true')
+          modal.innerHTML = `
+          <div class="notif-overlay" data-close="true"></div>
+          <div class="notif-panel" role="document">
+            <div class="notif-header">
+              <strong>Notifications</strong>
+              <div class="notif-actions">
+                <button class="btn btn-link" id="notifRefresh">Refresh</button>
+                <button class="btn btn-link" id="notifMarkAll">Mark all read</button>
+                <button class="btn btn-small btn-link" id="notifClose">Close</button>
+              </div>
+            </div>
+            <div class="notif-tabs">
+              <button class="notif-tab active" data-tab="notifications">Notifications</button>
+              <button class="notif-tab" data-tab="messages">Messages</button>
+            </div>
+            <div class="notif-subheader">Recent Notifications</div>
+            <div class="notif-filters" role="tablist" aria-label="Notification filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="quiz">Quizzes</button>
+              <button class="filter-btn" data-filter="activity">Activities</button>
+              <button class="filter-btn" data-filter="task">Tasks</button>
+              <button class="filter-btn" data-filter="material">Materials</button>
+            </div>
+            <div class="notif-content">
+              <div class="notif-list" id="notifList">
+                <div class="notif-loading">Loading…</div>
+              </div>
+              <div class="messages-list" id="messagesList" style="display:none">
+                <div class="notif-loading">Loading messages…</div>
+              </div>
+            </div>
+          </div>`
+          document.body.appendChild(modal)
+
+          // close handlers: overlay click and close button
+          modal.querySelectorAll('[data-close="true"]').forEach(el => el.addEventListener('click', closeNotifModal))
+          const closeBtn = modal.querySelector('#notifClose')
+          if (closeBtn) closeBtn.addEventListener('click', closeNotifModal)
+
+          // header controls: refresh, mark all, view all
+          const refreshBtn = modal.querySelector('#notifRefresh')
+          if (refreshBtn) refreshBtn.addEventListener('click', function () {
+            // refresh current tab content
+            try {
+              const activeTab = modal.querySelector('.notif-tab.active')?.getAttribute('data-tab') || 'notifications'
+              if (activeTab === 'notifications') {
+                const list = modal.querySelector('#notifList')
+                if (list) list.innerHTML = `<div class="notif-loading">Refreshing…</div>`
+                fetchAndRenderNotificationsInModal()
+              } else {
+                const mlist = modal.querySelector('#messagesList')
+                if (mlist) mlist.innerHTML = `<div class="notif-loading">Refreshing messages…</div>`
+                loadMessagesFragmentIntoModal()
+              }
+            } catch (e) { }
+          })
+
+          const markAllBtn = modal.querySelector('#notifMarkAll')
+          if (markAllBtn) markAllBtn.addEventListener('click', function () {
+            markAllNotificationsRead()
+          })
+
+          // Tab switching
+          modal.querySelectorAll('.notif-tab').forEach(t => t.addEventListener('click', function () {
+            modal.querySelectorAll('.notif-tab').forEach(x => x.classList.remove('active'))
+            this.classList.add('active')
+            const tab = this.getAttribute('data-tab')
+            if (tab === 'notifications') {
+              modal.querySelector('#notifList').style.display = ''
+              modal.querySelector('#messagesList').style.display = 'none'
+              modal.querySelector('.notif-subheader').textContent = modal.querySelector('.notif-subheader').textContent || 'Recent Notifications'
+              // refresh notifications
+              fetchAndRenderNotificationsInModal()
+            } else {
+              modal.querySelector('#notifList').style.display = 'none'
+              modal.querySelector('#messagesList').style.display = ''
+              modal.querySelector('.notif-subheader').textContent = 'Messages'
+              loadMessagesFragmentIntoModal()
+            }
+          }))
+          // Filter buttons
+          modal.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', function () {
+            modal.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'))
+            this.classList.add('active')
+            window.__notifFilter = this.getAttribute('data-filter')
+            // re-render using existing cache if present
+            renderNotificationsToModal(window.__notifications || [])
+          }))
+
+          // close on Escape
+          document.addEventListener('keydown', function escHandler(e) { if (e.key === 'Escape') closeNotifModal() })
+        }
+
+        // fill list
+        const list = modal.querySelector('#notifList')
+        if (!list) return
+        // update subheader with dynamic totals
+        const sub = modal.querySelector('.notif-subheader')
+        const total = (notifs && Array.isArray(notifs)) ? notifs.length : 0
+        const unreadCount = (notifs && Array.isArray(notifs)) ? notifs.filter(n => !n.read).length : 0
+        if (sub) {
+          sub.textContent = `Recent Notifications — ${total} total${total ? `, ${unreadCount} unread` : ''}`
+        }
+        if (!notifs || notifs.length === 0) {
+          list.innerHTML = `<div class="notif-empty">No notifications</div>`
+        } else {
+          // show all returned notifications (the list is scrollable)
+          const items = notifs
+          // small header showing totals (redundant with subheader but kept for accessibility)
+          list.innerHTML = `<div style="padding:8px 12px;color:var(--text-secondary);font-size:0.95rem">Showing ${total} notification${total !== 1 ? 's' : ''}${unreadCount ? ` — ${unreadCount} unread` : ''}</div>` + items.map(n => {
+            const when = new Date(n.created_at)
+            const ts = when.toLocaleString()
+            const title = escapeHtml(n.title || '')
+            const msg = escapeHtml(n.message || '')
+            const sender = escapeHtml(n.sender || 'Teacher')
+            const readClass = n.read ? 'read' : ''
+            const relatedHtml = (n.related && n.related.href) ? `<a class="notif-related" href="${escapeHtml(n.related.href)}">Open</a>` : ''
+            return `
+            <div class="notif-item ${readClass}" data-id="${n.id}" tabindex="0">
+              <div class="notif-item-head"><div style="display:flex;gap:10px;align-items:center"><div style="font-weight:700">${title}</div><div style="font-size:0.85rem;color:var(--text-secondary)">by ${sender}</div></div><div class="notif-item-time">${ts}</div></div>
+              <div class="notif-item-body">${msg}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+                <div>${relatedHtml}</div>
+                <div><button class="btn btn-small btn-ghost notif-mark" data-id="${n.id}">${n.read ? 'Read' : 'Mark as read'}</button></div>
+              </div>
+            </div>`
+          }).join('\n')
+
+          // attach event delegation for mark-as-read and related links
+          list.addEventListener('click', function (ev) {
+            const mark = ev.target.closest('.notif-mark')
+            if (mark) {
+              ev.preventDefault()
+              const nid = mark.getAttribute('data-id')
+              if (!nid) return
+              fetch('/LearnHub/api/notifications_mark_read.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: [parseInt(nid, 10)] })
+              }).then(r => r.json()).then(d => {
+                if (d && d.ok) {
+                  // update button and style
+                  try {
+                    mark.textContent = 'Read'
+                    const item = mark.closest('.notif-item')
+                    if (item) item.classList.add('read')
+                  } catch (e) { }
+                  // reflect state in cached notifications and refresh bell count
+                  try {
+                    if (window.__notifications && Array.isArray(window.__notifications)) {
+                      for (let i = 0; i < window.__notifications.length; i++) {
+                        if (String(window.__notifications[i].id) === String(nid)) { window.__notifications[i].read = true; break }
+                      }
+                    }
+                    // refresh bell count UI
+                    try { fetchAndRenderNotifications() } catch (e) { }
+                  } catch (e) { }
+                }
+              }).catch(e => console.warn('mark read failed', e))
+            }
+          })
+        }
+
+        // show modal
+        modal.setAttribute('aria-hidden', 'false')
+        modal.classList.add('open')
+        // focus first notification for accessibility
+        const first = modal.querySelector('.notif-item')
+        if (first) first.focus()
+      }).catch(err => { console.warn('openNotificationsModal failed', err) })
+    } catch (e) { console.warn('openNotificationsModal error', e) }
+  }
+
+  function closeNotifModal() {
+    try {
+      const modal = document.getElementById('notifModal')
+      if (!modal) return
+      modal.setAttribute('aria-hidden', 'true')
+      modal.classList.remove('open')
+    } catch (e) { }
+  }
+
+  function markAllNotificationsRead() {
+    try {
+      const notifs = window.__notifications || []
+      if (!notifs.length) return
+      const ids = notifs.map(n => parseInt(n.id, 10)).filter(Boolean)
+      if (!ids.length) return
+      fetch('/LearnHub/api/notifications_mark_read.php', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: ids })
+      }).then(r => r.json()).then(d => {
+        if (d && d.ok) {
+          // mark locally
+          if (Array.isArray(window.__notifications)) window.__notifications.forEach(n => { n.read = true })
+          // update UI
+          const modal = document.getElementById('notifModal')
+          if (modal) {
+            modal.querySelectorAll('.notif-item').forEach(it => it.classList.add('read'))
+            modal.querySelectorAll('.notif-mark').forEach(b => b.textContent = 'Read')
+          }
+          try { fetchAndRenderNotifications() } catch (e) { }
+        }
+      }).catch(e => console.warn('markAll failed', e))
+    } catch (e) { console.warn('markAllNotificationsRead error', e) }
+  }
+
+  // Load messages.php and extract the materials list to show inside the modal
+  function loadMessagesFragmentIntoModal() {
+    try {
+      const modal = document.getElementById('notifModal')
+      if (!modal) return
+      const container = modal.querySelector('#messagesList') || modal.querySelector('#notifList')
+      if (!container) return
+      container.innerHTML = '<div class="notif-loading">Loading messages…</div>'
+      fetch('/LearnHub/messages.php', { credentials: 'same-origin' }).then(r => r.text()).then(html => {
+        try {
+          const parser = new DOMParser()
+          const doc = parser.parseFromString(html, 'text/html')
+          const frag = doc.querySelector('.materials-list') || doc.querySelector('.messages-section') || null
+          if (frag) {
+            // back button to return to notifications tab
+            const back = document.createElement('div')
+            back.style.marginBottom = '8px'
+            back.innerHTML = '<button class="btn btn-link" id="notifBack">Back to notifications</button>'
+            container.innerHTML = ''
+            container.appendChild(back)
+            const clone = frag.cloneNode(true)
+            clone.style.maxHeight = '60vh'
+            clone.style.overflow = 'auto'
+            container.appendChild(clone)
+            const backBtn = document.getElementById('notifBack')
+            if (backBtn) backBtn.addEventListener('click', function () {
+              try {
+                // switch tab to notifications
+                const modal = document.getElementById('notifModal')
+                if (!modal) return
+                modal.querySelectorAll('.notif-tab').forEach(x => x.classList.remove('active'))
+                const notifTab = modal.querySelector('.notif-tab[data-tab="notifications"]')
+                if (notifTab) notifTab.classList.add('active')
+                modal.querySelector('#messagesList').style.display = 'none'
+                modal.querySelector('#notifList').style.display = ''
+                fetchAndRenderNotificationsInModal()
+              } catch (e) { closeNotifModal() }
+            })
+          } else {
+            container.innerHTML = '<div class="notif-empty">Unable to load messages.</div>'
+          }
+        } catch (e) { list.innerHTML = '<div class="notif-empty">Failed to parse messages.</div>' }
+      }).catch(e => { list.innerHTML = '<div class="notif-empty">Failed to load messages.</div>' })
+    } catch (e) { console.warn('loadMessagesFragmentIntoModal error', e) }
+  }
+
+  // Render a realtime clock into the navbar (skips login/register pages)
+  function renderClock() {
+    try {
+      const p = (location && location.pathname) ? location.pathname.toLowerCase() : ''
+      if (p.includes('login.php') || p.includes('register.php')) return
+      const navbarContent = document.querySelector('.navbar-content')
+      if (!navbarContent) return
+      if (document.getElementById('siteClock')) return
+
+      // Ensure navbarContent can be used as positioning context
+      if (getComputedStyle(navbarContent).position === 'static') {
+        navbarContent.style.position = 'relative'
+      }
+
+      const el = document.createElement('div')
+      el.id = 'siteClock'
+      el.className = 'site-clock'
+      el.innerHTML = `
       <div class="clock-wrapper">
         <div class="time-boxes">
           <div class="box hour">--</div>
@@ -198,188 +637,190 @@ function renderClock() {
         <div class="site-clock-date">---</div>
       </div>`
 
-    // Prefer to place the clock under the logout button (right side) as requested.
-    const navbarMenu = navbarContent.querySelector('.navbar-menu')
-    const logoutBtn = navbarMenu && (navbarMenu.querySelector('#logoutBtn') || navbarMenu.querySelector('.btn-logout'))
+      // Prefer to place the clock under the logout button (right side) as requested.
+      const navbarMenu = navbarContent.querySelector('.navbar-menu')
+      const logoutBtn = navbarMenu && (navbarMenu.querySelector('#logoutBtn') || navbarMenu.querySelector('.btn-logout'))
 
-    // Prefer to place a small clock in the top-right outside the hero (append to .navbar)
-    const navbarEl = document.querySelector('.navbar')
-    if (navbarEl) {
-      el.classList.add('top-clock')
-      // Insert the clock immediately after the .navbar element so it becomes
-      // part of the normal document flow (it will scroll away with the page)
-      // instead of being visually anchored to the sticky navbar.
-      try {
-        if (navbarEl.parentNode) navbarEl.parentNode.insertBefore(el, navbarEl.nextSibling)
-        else navbarEl.appendChild(el)
-      } catch (e) {
-        // fallback to append if insertion fails for any reason
-        navbarEl.appendChild(el)
-      }
-    } else {
-      // fallback: hero or main
-      const hero = document.querySelector('.hero-section')
-      const main = document.querySelector('.main-content')
-      let target = hero || main || navbarContent
-      if (target === hero) el.classList.add('hero-clock')
-      else if (target === main) el.classList.add('main-clock')
-      target.appendChild(el)
-    }
-
-    function pad(n){ return n.toString().padStart(2,'0') }
-    function to12(h) { const m = h % 12; return m === 0 ? 12 : m }
-
-    let lastMinute = null
-
-    function update() {
-      const d = new Date()
-      const hours24 = d.getHours()
-      const hours12 = to12(hours24)
-      const mm = pad(d.getMinutes())
-      const ss = pad(d.getSeconds())
-      const ampm = hours24 >= 12 ? 'PM' : 'AM'
-  const hStr = pad(hours12)
-  const mStr = mm
-  const sStr = ss
-  const date = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
-  const hEl = el.querySelector('.box.hour')
-  const mEl = el.querySelector('.box.minute')
-  const sEl = el.querySelector('.box.second')
-  const apEl = el.querySelector('.am-pm')
-  const dEl = el.querySelector('.site-clock-date')
-  if (hEl) hEl.textContent = hStr
-  if (mEl) mEl.textContent = mStr
-  if (sEl) sEl.textContent = sStr
-  if (apEl) apEl.textContent = ampm
-  if (dEl) dEl.textContent = date
-
-      const curMinute = d.getMinutes()
-      if (lastMinute === null) lastMinute = curMinute
-      else if (curMinute !== lastMinute) {
-        // Trigger a visual animation each minute change
+      // Prefer to place a small clock in the top-right outside the hero (append to .navbar)
+      const navbarEl = document.querySelector('.navbar')
+      if (navbarEl) {
+        el.classList.add('top-clock')
+        // Insert the clock immediately after the .navbar element so it becomes
+        // part of the normal document flow (it will scroll away with the page)
+        // instead of being visually anchored to the sticky navbar.
         try {
-          el.classList.add('minute-tick')
-          setTimeout(() => { try { el.classList.remove('minute-tick') } catch (e) {} }, 1200)
-        } catch (e) {}
-        lastMinute = curMinute
-      }
-    }
-
-    update()
-    setInterval(update, 1000)
-  } catch (e) { console.warn('renderClock failed', e) }
-}
-
-// Attach logout handlers to any logout controls (id, class, or data attribute).
-function attachLogoutHandlers() {
-  const selector = '#logoutBtn, .btn-logout, [data-logout]'
-  const els = Array.from(document.querySelectorAll(selector))
-
-  function handleLogoutEvent(e) {
-    // Support activation via click or keyboard (Enter/Space) on focusable elements
-    if (e.type === 'keydown') {
-      if (!(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) return
-      e.preventDefault()
-    }
-
-    // prevent default navigation if element is an anchor/button
-    try { e.preventDefault() } catch (err) {}
-    // show confirmation dialog
-    try {
-      if (!confirm("Do you want to logout?")) return
-    } catch (err) {
-      // In case confirm is blocked, still try to logout
-    }
-    // show overlay, then call central logout
-    try { showSigningOutOverlay() } catch (err) {}
-    console.log('logout: proceeding')
-    try {
-      if (typeof window.authLogout === 'function') {
-        window.authLogout()
+          if (navbarEl.parentNode) navbarEl.parentNode.insertBefore(el, navbarEl.nextSibling)
+          else navbarEl.appendChild(el)
+        } catch (e) {
+          // fallback to append if insertion fails for any reason
+          navbarEl.appendChild(el)
+        }
       } else {
-        // fallback to simple navigation
-        window.location.replace('login.php')
+        // fallback: hero or main
+        const hero = document.querySelector('.hero-section')
+        const main = document.querySelector('.main-content')
+        let target = hero || main || navbarContent
+        if (target === hero) el.classList.add('hero-clock')
+        else if (target === main) el.classList.add('main-clock')
+        target.appendChild(el)
       }
-    } catch (err) {
-      console.error('logout: authLogout failed', err)
-      try { window.location.replace('login.php') } catch (e) { window.location.href = 'login.php' }
-    }
-    // fallback: if authLogout didn't redirect, ensure we go to login after 200ms
-    setTimeout(() => {
+
+      function pad(n) { return n.toString().padStart(2, '0') }
+      function to12(h) { const m = h % 12; return m === 0 ? 12 : m }
+
+      let lastMinute = null
+
+      function update() {
+        const d = new Date()
+        const hours24 = d.getHours()
+        const hours12 = to12(hours24)
+        const mm = pad(d.getMinutes())
+        const ss = pad(d.getSeconds())
+        const ampm = hours24 >= 12 ? 'PM' : 'AM'
+        const hStr = pad(hours12)
+        const mStr = mm
+        const sStr = ss
+        const date = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+        const hEl = el.querySelector('.box.hour')
+        const mEl = el.querySelector('.box.minute')
+        const sEl = el.querySelector('.box.second')
+        const apEl = el.querySelector('.am-pm')
+        const dEl = el.querySelector('.site-clock-date')
+        if (hEl) hEl.textContent = hStr
+        if (mEl) mEl.textContent = mStr
+        if (sEl) sEl.textContent = sStr
+        if (apEl) apEl.textContent = ampm
+        if (dEl) dEl.textContent = date
+
+        const curMinute = d.getMinutes()
+        if (lastMinute === null) lastMinute = curMinute
+        else if (curMinute !== lastMinute) {
+          // Trigger a visual animation each minute change
+          try {
+            el.classList.add('minute-tick')
+            setTimeout(() => { try { el.classList.remove('minute-tick') } catch (e) { } }, 1200)
+          } catch (e) { }
+          lastMinute = curMinute
+        }
+      }
+
+      update()
+      setInterval(update, 1000)
+    } catch (e) { console.warn('renderClock failed', e) }
+  }
+
+  // Attach logout handlers to any logout controls (id, class, or data attribute).
+  function attachLogoutHandlers() {
+    const selector = '#logoutBtn, .btn-logout, [data-logout]'
+    const els = Array.from(document.querySelectorAll(selector))
+
+    function handleLogoutEvent(e) {
+      // Support activation via click or keyboard (Enter/Space) on focusable elements
+      if (e.type === 'keydown') {
+        if (!(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) return
+        e.preventDefault()
+      }
+
+      // prevent default navigation if element is an anchor/button
+      try { e.preventDefault() } catch (err) { }
+      // show confirmation dialog
       try {
-        if (location.pathname.indexOf('login.php') === -1) {
-          console.warn('logout: fallback redirect to login')
+        if (!confirm("Do you want to logout?")) return
+      } catch (err) {
+        // In case confirm is blocked, still try to logout
+      }
+      // show overlay, then call central logout
+      try { showSigningOutOverlay() } catch (err) { }
+      console.log('logout: proceeding')
+      try {
+        if (typeof window.authLogout === 'function') {
+          window.authLogout()
+        } else {
+          // fallback to simple navigation
           window.location.replace('login.php')
         }
-      } catch (err) { /* ignore */ }
-    }, 200)
+      } catch (err) {
+        console.error('logout: authLogout failed', err)
+        try { window.location.replace('login.php') } catch (e) { window.location.href = 'login.php' }
+      }
+      // fallback: if authLogout didn't redirect, ensure we go to login after 200ms
+      setTimeout(() => {
+        try {
+          if (location.pathname.indexOf('login.php') === -1) {
+            console.warn('logout: fallback redirect to login')
+            window.location.replace('login.php')
+          }
+        } catch (err) { /* ignore */ }
+      }, 200)
+    }
+
+    // Attach to each element if not already attached
+    els.forEach((el) => {
+      // use a flag to avoid double-binding
+      if (el.__logoutHandlerAttached) return
+      el.addEventListener('click', handleLogoutEvent)
+      el.addEventListener('keydown', handleLogoutEvent)
+      el.__logoutHandlerAttached = true
+      // ensure element is keyboard-focusable
+      if (!el.hasAttribute('tabindex')) {
+        el.setAttribute('tabindex', '0')
+      }
+      // set role if it's not a native button or link
+      const tag = el.tagName.toLowerCase()
+      if (tag !== 'button' && tag !== 'a' && !el.getAttribute('role')) {
+        el.setAttribute('role', 'button')
+      }
+    })
   }
 
-  // Attach to each element if not already attached
-  els.forEach((el) => {
-    // use a flag to avoid double-binding
-    if (el.__logoutHandlerAttached) return
-    el.addEventListener('click', handleLogoutEvent)
-    el.addEventListener('keydown', handleLogoutEvent)
-    el.__logoutHandlerAttached = true
-    // ensure element is keyboard-focusable
-    if (!el.hasAttribute('tabindex')) {
-      el.setAttribute('tabindex', '0')
-    }
-    // set role if it's not a native button or link
-    const tag = el.tagName.toLowerCase()
-    if (tag !== 'button' && tag !== 'a' && !el.getAttribute('role')) {
-      el.setAttribute('role', 'button')
-    }
+  document.addEventListener('DOMContentLoaded', () => {
+    attachLogoutHandlers()
   })
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-  attachLogoutHandlers()
-})
-
-function displayUserInfo() {
-  const user = getCurrentUser()
-  const userInfoEl = document.getElementById("userInfo")
-  if (userInfoEl) {
-    if (user && user.name) {
-      userInfoEl.textContent = `Welcome, ${user.name} (${user.studentId}) - ${user.program}`
-    } else {
-      userInfoEl.textContent = `Not signed in`
+  function displayUserInfo() {
+    const user = getCurrentUser()
+    const userInfoEl = document.getElementById("userInfo")
+    if (userInfoEl) {
+      if (user && user.name) {
+        // prefer SR-CODE if present, otherwise fallback to studentId
+        const idLabel = user.sr_code || user.studentId || ''
+        userInfoEl.textContent = `Welcome, ${user.name} ${idLabel ? '(' + idLabel + ')' : ''} - ${user.program}`
+      } else {
+        userInfoEl.textContent = `Not signed in`
+      }
     }
   }
-}
 
-// Render a small profile menu in the navbar showing name, email, profile link and logout
-function renderProfileMenu() {
-  try {
-    const navbar = document.querySelector('.navbar-content') || document.body
-    const menu = navbar && navbar.querySelector('.navbar-menu')
-    if (!menu) return
+  // Render a small profile menu in the navbar showing name, email, profile link and logout
+  function renderProfileMenu() {
+    try {
+      const navbar = document.querySelector('.navbar-content') || document.body
+      const menu = navbar && navbar.querySelector('.navbar-menu')
+      if (!menu) return
 
-    // avoid duplicate insertion
-    if (document.getElementById('profileContainer')) return
+      // avoid duplicate insertion
+      if (document.getElementById('profileContainer')) return
 
-    const user = getCurrentUser()
+      const user = getCurrentUser()
 
-    const container = document.createElement('div')
-    container.id = 'profileContainer'
-    container.className = 'profile-container'
+      const container = document.createElement('div')
+      container.id = 'profileContainer'
+      container.className = 'profile-container'
 
-    if (!user) {
-      // show simple not-signed-in state with link to login
-      container.innerHTML = `<div class="profile-unsigned">Not signed in • <a href="login.php">Sign in</a></div>`
-      // insert before logout button if present, else append
-      const ref = menu.querySelector('.btn-logout') || menu.querySelector('.theme-toggle')
-      if (ref) menu.insertBefore(container, ref.nextSibling)
-      else menu.appendChild(container)
-      return
-    }
+      if (!user) {
+        // show simple not-signed-in state with link to login
+        container.innerHTML = `<div class="profile-unsigned">Not signed in • <a href="login.php">Sign in</a></div>`
+        // insert before logout button if present, else append
+        const ref = menu.querySelector('.btn-logout') || menu.querySelector('.theme-toggle')
+        if (ref) menu.insertBefore(container, ref.nextSibling)
+        else menu.appendChild(container)
+        return
+      }
 
-    // build profile button + dropdown
-    const initials = (user.name || '').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()
-    const avatarHtml = user.avatar ? `<img src="${escapeHtml(user.avatar)}" alt="${escapeHtml(user.name||'avatar')}" />` : initials
-    container.innerHTML = `
+      // build profile button + dropdown
+      const initials = (user.name || '').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+      const avatarHtml = user.avatar ? `<img src="${escapeHtml(user.avatar)}" alt="${escapeHtml(user.name || 'avatar')}" />` : initials
+      container.innerHTML = `
       <button type="button" id="profileButton" class="profile-button" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-controls="profileDropdown">
         <span class="profile-avatar">${avatarHtml}</span>
         <span class="profile-name">${escapeHtml(user.name || 'Student')}</span>
@@ -393,247 +834,247 @@ function renderProfileMenu() {
       </div>
     `
 
-    // insert into menu near theme toggle/logout
-    const ref = menu.querySelector('.theme-toggle') || menu.querySelector('.btn-logout')
-    if (ref) menu.insertBefore(container, ref)
-    else menu.appendChild(container)
+      // insert into menu near theme toggle/logout
+      const ref = menu.querySelector('.theme-toggle') || menu.querySelector('.btn-logout')
+      if (ref) menu.insertBefore(container, ref)
+      else menu.appendChild(container)
 
-    const btn = container.querySelector('#profileButton')
-    const dd = container.querySelector('#profileDropdown')
-    const logoutBtn = container.querySelector('#profileLogoutBtn')
+      const btn = container.querySelector('#profileButton')
+      const dd = container.querySelector('#profileDropdown')
+      const logoutBtn = container.querySelector('#profileLogoutBtn')
 
-    // toggle dropdown (click)
-    function closeDropdown() {
-      if (!dd) return
-      dd.hidden = true
-      dd.setAttribute('aria-hidden', 'true')
-      if (btn) btn.setAttribute('aria-expanded', 'false')
-    }
+      // toggle dropdown (click)
+      function closeDropdown() {
+        if (!dd) return
+        dd.hidden = true
+        dd.setAttribute('aria-hidden', 'true')
+        if (btn) btn.setAttribute('aria-expanded', 'false')
+      }
 
-    function openDropdown() {
-      if (!dd) return
-      dd.hidden = false
-      dd.setAttribute('aria-hidden', 'false')
-      if (btn) btn.setAttribute('aria-expanded', 'true')
-      // focus first focusable item
-      const first = dd.querySelector('[role="menuitem"]')
-      if (first) first.focus()
-    }
+      function openDropdown() {
+        if (!dd) return
+        dd.hidden = false
+        dd.setAttribute('aria-hidden', 'false')
+        if (btn) btn.setAttribute('aria-expanded', 'true')
+        // focus first focusable item
+        const first = dd.querySelector('[role="menuitem"]')
+        if (first) first.focus()
+      }
 
-    btn.addEventListener('click', function(e) {
-      const expanded = btn.getAttribute('aria-expanded') === 'true'
-      if (expanded) closeDropdown(); else openDropdown();
-    })
-
-    // keyboard: Enter/Space opens, ArrowDown opens and focuses first
-    btn.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
+      btn.addEventListener('click', function (e) {
         const expanded = btn.getAttribute('aria-expanded') === 'true'
-        if (expanded) closeDropdown(); else openDropdown()
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        openDropdown()
-      }
-    })
+        if (expanded) closeDropdown(); else openDropdown();
+      })
 
-    // outside click closes
-    document.addEventListener('click', function(e) {
-      if (!container.contains(e.target)) {
-        closeDropdown()
-      }
-    })
-
-    // close on Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        if (dd && !dd.hidden) {
-          closeDropdown()
-          if (btn) btn.focus()
-        }
-      }
-    })
-
-    // keyboard navigation within dropdown (ArrowUp/ArrowDown)
-    if (dd) {
-      dd.addEventListener('keydown', function(e) {
-        const items = Array.from(dd.querySelectorAll('[role="menuitem"]'))
-        if (!items.length) return
-        const idx = items.indexOf(document.activeElement)
-        if (e.key === 'ArrowDown') {
+      // keyboard: Enter/Space opens, ArrowDown opens and focuses first
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          const next = items[(idx + 1) % items.length]
-          next.focus()
-        } else if (e.key === 'ArrowUp') {
+          const expanded = btn.getAttribute('aria-expanded') === 'true'
+          if (expanded) closeDropdown(); else openDropdown()
+        } else if (e.key === 'ArrowDown') {
           e.preventDefault()
-          const prev = items[(idx - 1 + items.length) % items.length]
-          prev.focus()
-        } else if (e.key === 'Enter') {
-          // activate focused item
-          if (document.activeElement) document.activeElement.click()
+          openDropdown()
         }
       })
-    }
 
-    // logout action
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', function() {
-        try {
-          if (confirm("Do you want to logout?")) {
-            try { showSigningOutOverlay() } catch (e) {}
+      // outside click closes
+      document.addEventListener('click', function (e) {
+        if (!container.contains(e.target)) {
+          closeDropdown()
+        }
+      })
+
+      // close on Escape key
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          if (dd && !dd.hidden) {
+            closeDropdown()
+            if (btn) btn.focus()
+          }
+        }
+      })
+
+      // keyboard navigation within dropdown (ArrowUp/ArrowDown)
+      if (dd) {
+        dd.addEventListener('keydown', function (e) {
+          const items = Array.from(dd.querySelectorAll('[role="menuitem"]'))
+          if (!items.length) return
+          const idx = items.indexOf(document.activeElement)
+          if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            const next = items[(idx + 1) % items.length]
+            next.focus()
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            const prev = items[(idx - 1 + items.length) % items.length]
+            prev.focus()
+          } else if (e.key === 'Enter') {
+            // activate focused item
+            if (document.activeElement) document.activeElement.click()
+          }
+        })
+      }
+
+      // logout action
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          try {
+            if (confirm("Do you want to logout?")) {
+              try { showSigningOutOverlay() } catch (e) { }
+              try {
+                if (typeof window.authLogout === 'function') window.authLogout()
+                else window.location.replace('login.php')
+              } catch (e) { window.location.replace('login.php') }
+            }
+          } catch (err) {
+            // In case confirm is blocked, still try to logout
+            try { showSigningOutOverlay() } catch (e) { }
             try {
               if (typeof window.authLogout === 'function') window.authLogout()
               else window.location.replace('login.php')
             } catch (e) { window.location.replace('login.php') }
           }
-        } catch (err) {
-          // In case confirm is blocked, still try to logout
-          try { showSigningOutOverlay() } catch (e) {}
-          try {
-            if (typeof window.authLogout === 'function') window.authLogout()
-            else window.location.replace('login.php')
-          } catch (e) { window.location.replace('login.php') }
-        }
-      })
-    }
+        })
+      }
 
-  } catch (e) {
-    // fail silently
-    console.warn('renderProfileMenu failed', e)
-  }
-}
-
-// Theme Management
-function loadTheme() {
-  const saved = localStorage.getItem("theme") || "dark"
-  document.documentElement.setAttribute("data-theme", saved)
-  updateThemeIcon(saved)
-}
-
-function toggleTheme() {
-  const current = document.documentElement.getAttribute("data-theme")
-  const newTheme = current === "dark" ? "light" : "dark"
-  document.documentElement.setAttribute("data-theme", newTheme)
-  localStorage.setItem("theme", newTheme)
-  updateThemeIcon(newTheme)
-}
-
-function updateThemeIcon(theme) {
-  const icons = document.querySelectorAll(".theme-icon")
-  icons.forEach((icon) => {
-    icon.textContent = theme === "dark" ? "☀️" : "🌙"
-  })
-}
-
-// Navigation
-function getCurrentPage() {
-  const pathname = window.location.pathname
-  if (pathname.includes("courses")) return "courses"
-  if (pathname.includes("assignments")) return "assignments"
-  if (pathname.includes("grades")) return "grades"
-  if (pathname.includes("announcements")) return "announcements"
-  if (pathname.includes("schedule")) return "schedule"
-  if (pathname.includes("messages")) return "messages"
-  return "dashboard"
-}
-
-function updateNavigation() {
-  document.querySelectorAll(".nav-link").forEach((link) => {
-    link.classList.remove("active")
-  })
-  document.querySelectorAll(".nav-link").forEach((link) => {
-    if (state.currentPage === "dashboard" && link.href.includes("index.php")) {
-      link.classList.add("active")
-    } else if (state.currentPage !== "dashboard" && link.href.includes(state.currentPage)) {
-      link.classList.add("active")
-    }
-  })
-}
-
-// Render Page Content
-function renderPageContent() {
-  switch (state.currentPage) {
-    case "dashboard":
-      renderDashboard()
-      break
-    case "courses":
-      renderCourses()
-      break
-    case "assignments":
-      renderAssignments()
-      break
-    case "grades":
-      renderGrades()
-      break
-    case "announcements":
-      renderAnnouncements()
-      break
-    case "schedule":
-      renderSchedule()
-      break
-    case "messages":
-      renderMessages()
-      break
-  }
-}
-
-// Dashboard Page
-function renderDashboard() {
-  updateGreeting()
-  updateDashboardStats()
-  renderDashboardAnnouncements()
-  renderTodaySchedule()
-  renderUpcomingAssignments()
-}
-
-function updateGreeting() {
-  const hour = new Date().getHours()
-  const greetings = ["Good night", "Good morning", "Good afternoon", "Good evening"]
-  const index = hour < 6 ? 0 : hour < 12 ? 1 : hour < 18 ? 2 : 3
-  const greeting = document.getElementById("greeting")
-  const user = getCurrentUser()
-  if (greeting && user) {
-    const name = escapeHtml(user.name || 'Student')
-    if (user.avatar) {
-      greeting.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.6rem"><img class="greeting-avatar" src="${escapeHtml(user.avatar)}" alt="${name}"><span>${greetings[index]}, ${name}</span></span>`
-    } else {
-      greeting.textContent = `${greetings[index]}, ${user.name || "Student"}`
+    } catch (e) {
+      // fail silently
+      console.warn('renderProfileMenu failed', e)
     }
   }
-}
 
-function updateDashboardStats() {
-  const coursesCount = coursesData.length
-  const dueSoon = assignmentsData.filter((a) => {
-    const dueDate = new Date(a.dueDate)
-    const today = new Date()
-    const diff = dueDate - today
-    return diff > 0 && diff < 7 * 24 * 60 * 60 * 1000
-  }).length
-  const currentGPA = calculateGPA()
-
-  const coursesCountEl = document.getElementById("coursesCount")
-  const dueSoonEl = document.getElementById("dueSoon")
-  const gpaEl = document.getElementById("gpaDisplay")
-
-  if (coursesCountEl) coursesCountEl.textContent = coursesCount
-  if (dueSoonEl) dueSoonEl.textContent = dueSoon
-  if (gpaEl) gpaEl.textContent = currentGPA
-}
-
-function renderDashboardAnnouncements() {
-  const list = document.getElementById("announcementsList")
-  if (!list) return
-
-  const recent = announcementsData.slice(0, 3)
-  if (recent.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📢</div><h4>No announcements</h4></div>`
-    return
+  // Theme Management
+  function loadTheme() {
+    const saved = localStorage.getItem("theme") || "dark"
+    document.documentElement.setAttribute("data-theme", saved)
+    updateThemeIcon(saved)
   }
 
-  list.innerHTML = recent
-    .map(
-      (ann) => `
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme")
+    const newTheme = current === "dark" ? "light" : "dark"
+    document.documentElement.setAttribute("data-theme", newTheme)
+    localStorage.setItem("theme", newTheme)
+    updateThemeIcon(newTheme)
+  }
+
+  function updateThemeIcon(theme) {
+    const icons = document.querySelectorAll(".theme-icon")
+    icons.forEach((icon) => {
+      icon.textContent = theme === "dark" ? "☀️" : "🌙"
+    })
+  }
+
+  // Navigation
+  function getCurrentPage() {
+    const pathname = window.location.pathname
+    if (pathname.includes("courses")) return "courses"
+    if (pathname.includes("assignments")) return "assignments"
+    if (pathname.includes("grades")) return "grades"
+    if (pathname.includes("announcements")) return "announcements"
+    if (pathname.includes("schedule")) return "schedule"
+    if (pathname.includes("messages")) return "messages"
+    return "dashboard"
+  }
+
+  function updateNavigation() {
+    document.querySelectorAll(".nav-link").forEach((link) => {
+      link.classList.remove("active")
+    })
+    document.querySelectorAll(".nav-link").forEach((link) => {
+      if (state.currentPage === "dashboard" && link.href.includes("index.php")) {
+        link.classList.add("active")
+      } else if (state.currentPage !== "dashboard" && link.href.includes(state.currentPage)) {
+        link.classList.add("active")
+      }
+    })
+  }
+
+  // Render Page Content
+  function renderPageContent() {
+    switch (state.currentPage) {
+      case "dashboard":
+        renderDashboard()
+        break
+      case "courses":
+        renderCourses()
+        break
+      case "assignments":
+        renderAssignments()
+        break
+      case "grades":
+        renderGrades()
+        break
+      case "announcements":
+        renderAnnouncements()
+        break
+      case "schedule":
+        renderSchedule()
+        break
+      case "messages":
+        renderMessages()
+        break
+    }
+  }
+
+  // Dashboard Page
+  function renderDashboard() {
+    updateGreeting()
+    updateDashboardStats()
+    renderDashboardAnnouncements()
+    renderTodaySchedule()
+    renderUpcomingAssignments()
+  }
+
+  function updateGreeting() {
+    const hour = new Date().getHours()
+    const greetings = ["Good night", "Good morning", "Good afternoon", "Good evening"]
+    const index = hour < 6 ? 0 : hour < 12 ? 1 : hour < 18 ? 2 : 3
+    const greeting = document.getElementById("greeting")
+    const user = getCurrentUser()
+    if (greeting && user) {
+      const name = escapeHtml(user.name || 'Student')
+      if (user.avatar) {
+        greeting.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.6rem"><img class="greeting-avatar" src="${escapeHtml(user.avatar)}" alt="${name}"><span>${greetings[index]}, ${name}</span></span>`
+      } else {
+        greeting.textContent = `${greetings[index]}, ${user.name || "Student"}`
+      }
+    }
+  }
+
+  function updateDashboardStats() {
+    const coursesCount = coursesData.length
+    const dueSoon = assignmentsData.filter((a) => {
+      const dueDate = new Date(a.dueDate)
+      const today = new Date()
+      const diff = dueDate - today
+      return diff > 0 && diff < 7 * 24 * 60 * 60 * 1000
+    }).length
+    const currentGPA = calculateGPA()
+
+    const coursesCountEl = document.getElementById("coursesCount")
+    const dueSoonEl = document.getElementById("dueSoon")
+    const gpaEl = document.getElementById("gpaDisplay")
+
+    if (coursesCountEl) coursesCountEl.textContent = coursesCount
+    if (dueSoonEl) dueSoonEl.textContent = dueSoon
+    if (gpaEl) gpaEl.textContent = currentGPA
+  }
+
+  function renderDashboardAnnouncements() {
+    const list = document.getElementById("announcementsList")
+    if (!list) return
+
+    const recent = announcementsData.slice(0, 3)
+    if (recent.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📢</div><h4>No announcements</h4></div>`
+      return
+    }
+
+    list.innerHTML = recent
+      .map(
+        (ann) => `
     <div class="announcement-item">
       <div class="announcement-header">
         <div class="announcement-title">${escapeHtml(ann.title)}</div>
@@ -642,30 +1083,30 @@ function renderDashboardAnnouncements() {
       <div class="announcement-content">${escapeHtml(ann.content)}</div>
     </div>
   `,
-    )
-    .join("")
-}
-
-function renderTodaySchedule() {
-  const list = document.getElementById("todaySchedule")
-  if (!list) return
-
-  const today = new Date().toLocaleString("en-US", { weekday: "long" })
-  const todayClasses = scheduleData.filter((s) => s.day === today)
-
-  if (todayClasses.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🕐</div>
-        <h4>No classes today</h4>
-      </div>
-    `
-    return
+      )
+      .join("")
   }
 
-  list.innerHTML = todayClasses
-    .map(
-      (s) => `
+  function renderTodaySchedule() {
+    const list = document.getElementById("todaySchedule")
+    if (!list) return
+
+    const today = new Date().toLocaleString("en-US", { weekday: "long" })
+    const todayClasses = scheduleData.filter((s) => s.day === today)
+
+    if (todayClasses.length === 0) {
+      list.innerHTML = `
+      <div class="empty-state centered">
+        <div class="empty-icon">🕐</div>
+        <h4>No Activities Scheduled</h4>
+      </div>
+    `
+      return
+    }
+
+    list.innerHTML = todayClasses
+      .map(
+        (s) => `
     <div class="schedule-item">
       <div class="time-slot">${s.time}</div>
       <div class="schedule-details">
@@ -674,32 +1115,32 @@ function renderTodaySchedule() {
       </div>
     </div>
   `,
-    )
-    .join("")
-}
+      )
+      .join("")
+  }
 
-function renderUpcomingAssignments() {
-  const list = document.getElementById("recentAssignments")
-  if (!list) return
+  function renderUpcomingAssignments() {
+    const list = document.getElementById("recentAssignments")
+    if (!list) return
 
-  const upcoming = assignmentsData
-    .filter((a) => a.status === "pending")
-    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-    .slice(0, 3)
+    const upcoming = assignmentsData
+      .filter((a) => a.status === "pending")
+      .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+      .slice(0, 3)
 
-  if (upcoming.length === 0) {
-    list.innerHTML = `
+    if (upcoming.length === 0) {
+      list.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">✍️</div>
         <h4>No pending assignments</h4>
       </div>
     `
-    return
-  }
+      return
+    }
 
-  list.innerHTML = upcoming
-    .map(
-      (a) => `
+    list.innerHTML = upcoming
+      .map(
+        (a) => `
     <div class="assignment-item">
       <div class="assignment-content">
         <div class="assignment-title">${escapeHtml(a.title)}</div>
@@ -713,23 +1154,24 @@ function renderUpcomingAssignments() {
       </div>
     </div>
   `,
-    )
-    .join("")
-}
-
-// Courses Page
-function renderCourses() {
-  const list = document.getElementById("coursesList")
-  if (!list) return
-
-  if (coursesData.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><h4>No courses</h4></div>`
-    return
+      )
+      .join("")
   }
 
-  list.innerHTML = coursesData
-    .map(
-      (course) => `
+  // Courses Page
+  function renderCourses() {
+    const list = document.getElementById("coursesList")
+    if (!list) return
+
+    if (coursesData.length === 0) {
+      // empty state removed per user request (no icon/text when there are no courses)
+      list.innerHTML = ''
+      return
+    }
+
+    list.innerHTML = coursesData
+      .map(
+        (course) => `
     <div class="course-card-grid">
       <div class="course-header">
         <div class="course-code-large">${course.code}</div>
@@ -743,41 +1185,41 @@ function renderCourses() {
       </div>
     </div>
   `,
-    )
-    .join("")
-}
-
-// Assignments Page
-function renderAssignments() {
-  const list = document.getElementById("assignmentsList")
-  if (!list) return
-
-  let filtered = assignmentsData
-
-  if (state.currentFilter !== "all") {
-    filtered = filtered.filter((a) => a.status === state.currentFilter)
+      )
+      .join("")
   }
 
-  if (state.searchQuery) {
-    const query = state.searchQuery.toLowerCase()
-    filtered = filtered.filter((a) => a.title.toLowerCase().includes(query) || a.course.toLowerCase().includes(query))
-  }
+  // Assignments Page
+  function renderAssignments() {
+    const list = document.getElementById("assignmentsList")
+    if (!list) return
 
-  filtered.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+    let filtered = assignmentsData
 
-  if (filtered.length === 0) {
-    list.innerHTML = `
+    if (state.currentFilter !== "all") {
+      filtered = filtered.filter((a) => a.status === state.currentFilter)
+    }
+
+    if (state.searchQuery) {
+      const query = state.searchQuery.toLowerCase()
+      filtered = filtered.filter((a) => a.title.toLowerCase().includes(query) || a.course.toLowerCase().includes(query))
+    }
+
+    filtered.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">✍️</div>
         <h4>No assignments found</h4>
       </div>
     `
-    return
-  }
+      return
+    }
 
-  list.innerHTML = filtered
-    .map(
-      (a) => `
+    list.innerHTML = filtered
+      .map(
+        (a) => `
     <div class="assignment-item">
       <div class="assignment-content">
         <div class="assignment-title">${escapeHtml(a.title)}</div>
@@ -798,29 +1240,29 @@ function renderAssignments() {
       </div>
     </div>
   `,
-    )
-    .join("")
-}
-
-// Grades Page
-function renderGrades() {
-  const list = document.getElementById("gradesList")
-  const gpaEl = document.getElementById("currentGPA")
-
-  if (gpaEl) {
-    gpaEl.textContent = calculateGPA()
+      )
+      .join("")
   }
 
-  if (!list) return
+  // Grades Page
+  function renderGrades() {
+    const list = document.getElementById("gradesList")
+    const gpaEl = document.getElementById("currentGPA")
 
-  if (gradesData.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><h4>No grades</h4></div>`
-    return
-  }
+    if (gpaEl) {
+      gpaEl.textContent = calculateGPA()
+    }
 
-  list.innerHTML = gradesData
-    .map(
-      (g) => `
+    if (!list) return
+
+    if (gradesData.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><h4>No grades</h4></div>`
+      return
+    }
+
+    list.innerHTML = gradesData
+      .map(
+        (g) => `
     <div class="grade-item">
       <div class="grade-course">
         <div style="font-weight: 700;">${g.courseCode}</div>
@@ -848,41 +1290,53 @@ function renderGrades() {
       <div class="grade-score">${g.average}%</div>
     </div>
   `,
-    )
-    .join("")
-}
-
-// Announcements Page
-function renderAnnouncements() {
-  const list = document.getElementById("announcementsList")
-  if (!list) return
-
-  let filtered = announcementsData
-
-  if (state.currentFilter !== "all") {
-    filtered = filtered.filter((a) => a.type === state.currentFilter)
+      )
+      .join("")
   }
 
-  if (state.searchQuery) {
-    const query = state.searchQuery.toLowerCase()
-    filtered = filtered.filter((a) => a.title.toLowerCase().includes(query) || a.content.toLowerCase().includes(query))
-  }
+  // Announcements Page
+  function renderAnnouncements() {
+    const list = document.getElementById("announcementsList")
+    if (!list) return
 
-  filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
+    // If the server already rendered announcements (task cards / notif cards),
+    // avoid client-side overwrite. This preserves server-side targeting and
+    // prevents the sample `portal-data.js` from replacing real data.
+    try {
+      if (list.querySelector('.tasks-grid') || list.querySelector('.task-card') || list.querySelector('.notif-card')) {
+        // server-rendered content present, skip client render
+        return
+      }
+    } catch (e) {
+      // if DOM access fails for any reason, fall back to client render
+    }
 
-  if (filtered.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
+    let filtered = announcementsData
+
+    if (state.currentFilter !== "all") {
+      filtered = filtered.filter((a) => a.type === state.currentFilter)
+    }
+
+    if (state.searchQuery) {
+      const query = state.searchQuery.toLowerCase()
+      filtered = filtered.filter((a) => a.title.toLowerCase().includes(query) || a.content.toLowerCase().includes(query))
+    }
+
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+      <div class="empty-state centered">
         <div class="empty-icon">📢</div>
-        <h4>No announcements found</h4>
+        <h4>No Performance Task Scheduled</h4>
       </div>
     `
-    return
-  }
+      return
+    }
 
-  list.innerHTML = filtered
-    .map(
-      (a) => `
+    list.innerHTML = filtered
+      .map(
+        (a) => `
     <div class="announcement-item">
       <div class="announcement-header">
         <div>
@@ -896,27 +1350,35 @@ function renderAnnouncements() {
       <div class="announcement-content">${escapeHtml(a.content)}</div>
     </div>
   `,
-    )
-    .join("")
-}
-
-// Schedule Page
-function renderSchedule() {
-  const list = document.getElementById("scheduleList")
-  if (!list) return
-
-  if (scheduleData.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><h4>No classes scheduled</h4></div>`
-    return
+      )
+      .join("")
   }
 
-  list.innerHTML = scheduleData
-    .sort((a, b) => {
-      const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-      return dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day)
-    })
-    .map(
-      (s) => `
+  // Schedule Page
+  function renderSchedule() {
+    const list = document.getElementById("scheduleList")
+    if (!list) return
+
+    // If the server already rendered the activities grid/cards, don't overwrite it
+    try {
+      if (list.querySelector('.activities-grid') || list.querySelector('.activity-card')) {
+        return
+      }
+    } catch (e) {
+      // ignore DOM errors and continue with client render
+    }
+    if (scheduleData.length === 0) {
+      list.innerHTML = `<div class="empty-state centered"><div class="empty-icon">📅</div><h4>No Activities Scheduled</h4></div>`
+      return
+    }
+
+    list.innerHTML = scheduleData
+      .sort((a, b) => {
+        const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        return dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day)
+      })
+      .map(
+        (s) => `
     <div class="schedule-item">
       <div class="time-slot">${s.time}</div>
       <div class="schedule-details">
@@ -925,42 +1387,42 @@ function renderSchedule() {
       </div>
     </div>
   `,
-    )
-    .join("")
-}
-
-// Messages Page
-function renderMessages() {
-  const list = document.getElementById("messagesList")
-  if (!list) return
-
-  let filtered = messagesData
-
-  if (state.searchQuery) {
-    const query = state.searchQuery.toLowerCase()
-    filtered = filtered.filter(
-      (m) =>
-        m.sender.toLowerCase().includes(query) ||
-        m.subject.toLowerCase().includes(query) ||
-        m.preview.toLowerCase().includes(query),
-    )
+      )
+      .join("")
   }
 
-  filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
+  // Messages Page
+  function renderMessages() {
+    const list = document.getElementById("messagesList")
+    if (!list) return
 
-  if (filtered.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
+    let filtered = messagesData
+
+    if (state.searchQuery) {
+      const query = state.searchQuery.toLowerCase()
+      filtered = filtered.filter(
+        (m) =>
+          m.sender.toLowerCase().includes(query) ||
+          m.subject.toLowerCase().includes(query) ||
+          m.preview.toLowerCase().includes(query),
+      )
+    }
+
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+      <div class="empty-state centered">
         <div class="empty-icon">💬</div>
-        <h4>No messages found</h4>
+        <h4>No Learning Materials</h4>
       </div>
     `
-    return
-  }
+      return
+    }
 
-  list.innerHTML = filtered
-    .map(
-      (m) => `
+    list.innerHTML = filtered
+      .map(
+        (m) => `
     <div class="message-item">
       <div class="message-header">
         <div class="message-sender">${escapeHtml(m.sender)} ${m.course !== "General" ? `(${m.course})` : ""}</div>
@@ -970,141 +1432,141 @@ function renderMessages() {
       <div class="message-preview">${escapeHtml(m.preview)}</div>
     </div>
   `,
-    )
-    .join("")
-}
-
-// Event Listeners
-function setupEventListeners() {
-  // Theme
-  document.querySelectorAll(".theme-toggle").forEach((btn) => {
-    btn.addEventListener("click", toggleTheme)
-  })
-
-  // Filters
-  document.querySelectorAll(".filter-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"))
-      e.target.classList.add("active")
-      state.currentFilter = e.target.dataset.filter
-      renderPageContent()
-    })
-  })
-
-  // Search
-  document.querySelectorAll(".search-input").forEach((input) => {
-    input.addEventListener("input", (e) => {
-      state.searchQuery = e.target.value
-      renderPageContent()
-    })
-  })
-}
-
-// Utility Functions
-function escapeHtml(text) {
-  const div = document.createElement("div")
-  div.textContent = text
-  return div.innerHTML
-}
-
-function formatDate(dateString) {
-  const date = new Date(dateString)
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })
-}
-
-/* Page transition handling
-   - Creates an overlay element used to animate page load (fade-in) and navigation (fade-out).
-   - Intercepts internal link clicks and plays an exit animation before navigating. */
-function setupPageTransitions() {
-  try {
-    let overlay = document.getElementById('pageTransitionOverlay')
-    // If overlay isn't in DOM yet (older pages), create it. If it's present (we injected
-    // in HTML), just reuse it and attach listeners so the enter animation can be handled.
-    if (!overlay) {
-      overlay = document.createElement('div')
-      overlay.id = 'pageTransitionOverlay'
-      overlay.className = 'page-transition-overlay pt-enter'
-      document.body.appendChild(overlay)
-    } else {
-      // Ensure it has the classes needed to animate in if page loaded with it present
-      if (!overlay.classList.contains('pt-enter') && !overlay.classList.contains('hidden')) {
-        overlay.classList.add('pt-enter')
-      }
-    }
-
-    // After the enter animation ends, hide the overlay so content is interactive
-    const handleEnterEnd = function onEnd(e) {
-      try {
-        if (e.animationName && e.animationName.toLowerCase().includes('page-fade-in')) {
-          overlay.classList.remove('pt-enter')
-          overlay.classList.add('hidden')
-          overlay.removeEventListener('animationend', handleEnterEnd)
-        }
-      } catch (err) { /* ignore */ }
-    }
-    overlay.addEventListener('animationend', handleEnterEnd)
-
-    // Intercept internal navigation clicks
-    document.addEventListener('click', function (ev) {
-      try {
-        const a = ev.target.closest && ev.target.closest('a')
-        if (!a) return
-        // ignore if has target=_blank or external link with protocol
-        if (a.target === '_blank') return
-        const href = a.getAttribute('href')
-        if (!href) return
-        // ignore anchor-only links
-        if (href.startsWith('#')) return
-        // absolute full URLs: only handle same-origin
-        const url = new URL(href, window.location.href)
-        if (url.origin !== window.location.origin) return
-
-        // only handle HTML pages in same origin
-        // allow default for links that are the current page (let browser handle)
-        const isSamePage = url.pathname === location.pathname && (!url.hash || url.hash === location.hash)
-        if (isSamePage) return
-
-        // prevent default navigation and run exit animation
-        ev.preventDefault()
-  overlay.classList.remove('hidden')
-  overlay.classList.remove('pt-enter')
-  overlay.classList.add('blocking')
-  // force reflow so the animation class is applied cleanly
-  // eslint-disable-next-line no-unused-expressions
-  overlay.offsetHeight
-  overlay.classList.add('pt-exit')
-
-        // wait for animation to end then navigate
-        const done = () => {
-          try { window.location.href = url.href } catch (e) { window.location.assign(url.href) }
-        }
-
-        const listener = function (e) {
-          try {
-            if (e.animationName && e.animationName.toLowerCase().includes('page-fade-out')) {
-              overlay.removeEventListener('animationend', listener)
-              done()
-            }
-          } catch (err) { done() }
-        }
-        overlay.addEventListener('animationend', listener)
-
-        // fallback: if animationend doesn't fire, navigate after 900ms (safe > 700ms)
-        setTimeout(() => {
-          try { done() } catch (e) {}
-        }, 900)
-      } catch (e) {
-        // ignore and let default behavior happen
-      }
-    }, { capture: true })
-  } catch (e) {
-    console.warn('setupPageTransitions failed', e)
+      )
+      .join("")
   }
-}
 
-// close the initialization guard from the top of the file
+  // Event Listeners
+  function setupEventListeners() {
+    // Theme
+    document.querySelectorAll(".theme-toggle").forEach((btn) => {
+      btn.addEventListener("click", toggleTheme)
+    })
+
+    // Filters
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"))
+        e.target.classList.add("active")
+        state.currentFilter = e.target.dataset.filter
+        renderPageContent()
+      })
+    })
+
+    // Search
+    document.querySelectorAll(".search-input").forEach((input) => {
+      input.addEventListener("input", (e) => {
+        state.searchQuery = e.target.value
+        renderPageContent()
+      })
+    })
+  }
+
+  // Utility Functions
+  function escapeHtml(text) {
+    const div = document.createElement("div")
+    div.textContent = text
+    return div.innerHTML
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
+  }
+
+  /* Page transition handling
+     - Creates an overlay element used to animate page load (fade-in) and navigation (fade-out).
+     - Intercepts internal link clicks and plays an exit animation before navigating. */
+  function setupPageTransitions() {
+    try {
+      let overlay = document.getElementById('pageTransitionOverlay')
+      // If overlay isn't in DOM yet (older pages), create it. If it's present (we injected
+      // in HTML), just reuse it and attach listeners so the enter animation can be handled.
+      if (!overlay) {
+        overlay = document.createElement('div')
+        overlay.id = 'pageTransitionOverlay'
+        overlay.className = 'page-transition-overlay pt-enter'
+        document.body.appendChild(overlay)
+      } else {
+        // Ensure it has the classes needed to animate in if page loaded with it present
+        if (!overlay.classList.contains('pt-enter') && !overlay.classList.contains('hidden')) {
+          overlay.classList.add('pt-enter')
+        }
+      }
+
+      // After the enter animation ends, hide the overlay so content is interactive
+      const handleEnterEnd = function onEnd(e) {
+        try {
+          if (e.animationName && e.animationName.toLowerCase().includes('page-fade-in')) {
+            overlay.classList.remove('pt-enter')
+            overlay.classList.add('hidden')
+            overlay.removeEventListener('animationend', handleEnterEnd)
+          }
+        } catch (err) { /* ignore */ }
+      }
+      overlay.addEventListener('animationend', handleEnterEnd)
+
+      // Intercept internal navigation clicks
+      document.addEventListener('click', function (ev) {
+        try {
+          const a = ev.target.closest && ev.target.closest('a')
+          if (!a) return
+          // ignore if has target=_blank or external link with protocol
+          if (a.target === '_blank') return
+          const href = a.getAttribute('href')
+          if (!href) return
+          // ignore anchor-only links
+          if (href.startsWith('#')) return
+          // absolute full URLs: only handle same-origin
+          const url = new URL(href, window.location.href)
+          if (url.origin !== window.location.origin) return
+
+          // only handle HTML pages in same origin
+          // allow default for links that are the current page (let browser handle)
+          const isSamePage = url.pathname === location.pathname && (!url.hash || url.hash === location.hash)
+          if (isSamePage) return
+
+          // prevent default navigation and run exit animation
+          ev.preventDefault()
+          overlay.classList.remove('hidden')
+          overlay.classList.remove('pt-enter')
+          overlay.classList.add('blocking')
+          // force reflow so the animation class is applied cleanly
+          // eslint-disable-next-line no-unused-expressions
+          overlay.offsetHeight
+          overlay.classList.add('pt-exit')
+
+          // wait for animation to end then navigate
+          const done = () => {
+            try { window.location.href = url.href } catch (e) { window.location.assign(url.href) }
+          }
+
+          const listener = function (e) {
+            try {
+              if (e.animationName && e.animationName.toLowerCase().includes('page-fade-out')) {
+                overlay.removeEventListener('animationend', listener)
+                done()
+              }
+            } catch (err) { done() }
+          }
+          overlay.addEventListener('animationend', listener)
+
+          // fallback: if animationend doesn't fire, navigate after 900ms (safe > 700ms)
+          setTimeout(() => {
+            try { done() } catch (e) { }
+          }, 900)
+        } catch (e) {
+          // ignore and let default behavior happen
+        }
+      }, { capture: true })
+    } catch (e) {
+      console.warn('setupPageTransitions failed', e)
+    }
+  }
+
+  // close the initialization guard from the top of the file
 }

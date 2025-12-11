@@ -56,7 +56,7 @@ body {
 }
 
 /* Page transition overlay (used to animate between pages) */
-.page-transition-overlay {
+/* .page-transition-overlay {
   position: fixed;
   inset: 0;
   background: var(--bg-primary);
@@ -65,26 +65,46 @@ body {
   opacity: 1;
   transition: opacity 700ms ease;
 }
+
 .page-transition-overlay.hidden {
   opacity: 0;
   pointer-events: none;
 }
+
 .page-transition-overlay.blocking {
-  pointer-events: auto; /* block interactions while animating out */
+  pointer-events: auto;
+  /* block interactions while animating out */
+/* } */
+
+
+/* @keyframes page-fade-in {
+  from {
+    opacity: 1
+  }
+
+  to {
+    opacity: 0
+  }
 }
 
-@keyframes page-fade-in {
-  from { opacity: 1 }
-  to { opacity: 0 }
-}
 @keyframes page-fade-out {
-  from { opacity: 0 }
-  to { opacity: 1 }
-}
+  from {
+    opacity: 0
+  }
+
+  to {
+    opacity: 1
+  }
+} */
 
 /* helper classes to trigger animations (0.7s fade) */
-.pt-enter { animation: page-fade-in 700ms ease forwards; }
-.pt-exit { animation: page-fade-out 700ms ease forwards; }
+/* .pt-enter {
+  animation: page-fade-in 700ms ease forwards;
+}
+
+.pt-exit {
+  animation: page-fade-out 700ms ease forwards;
+} */
 
 /* App Layout */
 .app-container {
@@ -131,7 +151,8 @@ body {
 
 /* Logo image sizing */
 .brand-logo-img {
-  height: 3rem; /* default site logo height for index and most pages */
+  height: 3rem;
+  /* default site logo height for index and most pages */
   width: auto;
   display: inline-block;
 }
@@ -155,10 +176,12 @@ body.login-page .brand-logo-img {
   align-items: center;
   margin-left: 0.75rem;
 }
+
 .profile-unsigned {
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
+
 .profile-button {
   display: inline-flex;
   align-items: center;
@@ -169,6 +192,7 @@ body.login-page .brand-logo-img {
   cursor: pointer;
   font-weight: 600;
 }
+
 .profile-avatar {
   display: inline-flex;
   align-items: center;
@@ -181,7 +205,14 @@ body.login-page .brand-logo-img {
   font-size: 0.8rem;
   overflow: hidden;
 }
-.profile-avatar img { width:100%; height:100%; object-fit:cover; display:block }
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block
+}
+
 .profile-dropdown {
   position: absolute;
   right: auto;
@@ -194,24 +225,82 @@ body.login-page .brand-logo-img {
   z-index: 2000;
   box-shadow: var(--shadow-sm);
 }
-.profile-info { padding: 0.25rem 0; color: var(--text-primary); }
-.profile-email { font-size: 0.85rem; color: var(--text-secondary); }
-.profile-actions { display:flex; flex-direction: column; gap: 0.25rem; margin-top: 0.5rem }
-.profile-link { padding: 0.4rem 0.6rem; border-radius: 6px; text-align:left; display:block; color:var(--text-primary); background: transparent; border: none; cursor:pointer }
-.profile-link:hover { background: rgba(255,255,255,0.03) }
-.profile-logout { padding: 0.45rem 0.8rem; border-radius: 6px; display:block; color:#fff; background: linear-gradient(90deg,var(--primary-red), #ff5a6e); border: none; cursor:pointer; font-weight:700; box-shadow: 0 6px 18px rgba(196,30,58,0.18) }
-.profile-logout:hover { transform: translateY(-2px); opacity: 0.98 }
+
+.profile-info {
+  padding: 0.25rem 0;
+  color: var(--text-primary);
+}
+
+.profile-email {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem
+}
+
+.profile-link {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  text-align: left;
+  display: block;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer
+}
+
+.profile-link:hover {
+  background: rgba(255, 255, 255, 0.03)
+}
+
+.profile-logout {
+  padding: 0.45rem 0.8rem;
+  border-radius: 6px;
+  display: block;
+  color: #fff;
+  background: linear-gradient(90deg, var(--primary-red), #ff5a6e);
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(196, 30, 58, 0.18)
+}
+
+.profile-logout:hover {
+  transform: translateY(-2px);
+  opacity: 0.98
+}
 
 /* Ensure long profile names are visible and not truncated in the navbar. */
-.profile-container { display: inline-flex; align-items: center; margin-left: 0.75rem; gap: 0.5rem; flex-shrink: 0; }
-.profile-button { max-width: 220px; display: inline-flex; align-items: center; gap: 0.6rem; }
+.profile-container {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.75rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.profile-button {
+  max-width: 220px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .profile-button .profile-name {
   display: inline-block;
-  max-width: 12.5rem; /* allow the name some room */
-  white-space: normal; /* allow wrapping to multiple lines if necessary */
+  max-width: 12.5rem;
+  /* allow the name some room */
+  white-space: normal;
+  /* allow wrapping to multiple lines if necessary */
   overflow: visible;
   text-overflow: clip;
-  line-height: 1.05; /* compact line-height to keep navbar height reasonable */
+  line-height: 1.05;
+  /* compact line-height to keep navbar height reasonable */
 }
 
 /* Site clock styling - appears in navbar near logout */
@@ -222,29 +311,55 @@ body.login-page .brand-logo-img {
   gap: 2px;
   padding: 0.35rem 0.6rem;
   border-radius: 8px;
-  background: linear-gradient(90deg, rgba(196,30,58,0.06), rgba(184,134,11,0.03));
+  background: linear-gradient(90deg, rgba(196, 30, 58, 0.06), rgba(184, 134, 11, 0.03));
   color: var(--text-primary);
   font-weight: 700;
   margin-left: 0.5rem;
   min-width: 6rem;
-  box-shadow: 0 4px 14px rgba(196,30,58,0.06);
+  box-shadow: 0 4px 14px rgba(196, 30, 58, 0.06);
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
-.site-clock:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(196,30,58,0.12); }
-.site-clock-time { font-size: 0.95rem; letter-spacing: 0.6px; }
-.site-clock-date { font-size: 0.72rem; color: var(--text-secondary); font-weight:600 }
+
+.site-clock:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(196, 30, 58, 0.12);
+}
+
+.site-clock-time {
+  font-size: 0.95rem;
+  letter-spacing: 0.6px;
+}
+
+.site-clock-date {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 600
+}
 
 /* gentle pulsing glow animation */
 @keyframes clockPulse {
-  0% { box-shadow: 0 0 0 rgba(196,30,58,0.00) }
-  60% { box-shadow: 0 8px 24px rgba(196,30,58,0.06) }
-  100% { box-shadow: 0 0 0 rgba(196,30,58,0.00) }
+  0% {
+    box-shadow: 0 0 0 rgba(196, 30, 58, 0.00)
+  }
+
+  60% {
+    box-shadow: 0 8px 24px rgba(196, 30, 58, 0.06)
+  }
+
+  100% {
+    box-shadow: 0 0 0 rgba(196, 30, 58, 0.00)
+  }
 }
-.site-clock { animation: clockPulse 6s ease-in-out infinite; }
+
+.site-clock {
+  animation: clockPulse 6s ease-in-out infinite;
+}
 
 /* hide clock on small screens to keep navbar tidy */
 @media (max-width: 760px) {
-  .site-clock { display: none }
+  .site-clock {
+    display: none
+  }
 }
 
 /* Navbar extras row placed under the main nav menu (right aligned) */
@@ -256,15 +371,30 @@ body.login-page .brand-logo-img {
 }
 
 /* Ensure the extras row doesn't push navbar height excessively */
-.navbar .navbar-extras { align-items: center }
+.navbar .navbar-extras {
+  align-items: center
+}
 
 /* When clock is placed next to brand/logo (left side) */
-.brand-clock-wrap { display: inline-flex; margin-left: 1rem; align-items: center }
-.navbar-brand .brand-clock-wrap .site-clock { margin-left: 0.5rem; min-width: auto; padding: 0.25rem 0.5rem }
+.brand-clock-wrap {
+  display: inline-flex;
+  margin-left: 1rem;
+  align-items: center
+}
+
+.navbar-brand .brand-clock-wrap .site-clock {
+  margin-left: 0.5rem;
+  min-width: auto;
+  padding: 0.25rem 0.5rem
+}
 
 @media (max-width: 760px) {
+
   /* hide clock on small screens whether left or right */
-  .site-clock, .brand-clock-wrap { display: none }
+  .site-clock,
+  .brand-clock-wrap {
+    display: none
+  }
 }
 
 .navbar-menu {
@@ -451,25 +581,35 @@ body.login-page .brand-logo-img {
    visual prominence for better contrast on dark backgrounds. */
 .section-header .section-title {
   flex: 1 1 auto;
-  min-width: 0; /* allow flex children to shrink without overflowing */
-  white-space: normal; /* allow wrapping across lines if needed */
+  min-width: 0;
+  /* allow flex children to shrink without overflowing */
+  white-space: normal;
+  /* allow wrapping across lines if needed */
   word-break: break-word;
-  margin-right: 1rem; /* spacing from the action button on the right */
+  margin-right: 1rem;
+  /* spacing from the action button on the right */
   color: var(--text-primary);
-  font-weight: 700; /* restore original weight */
+  font-weight: 700;
+  /* restore original weight */
 }
 
 /* Prevent clipping of titles: make header allow visible overflow, ensure title
    has enough line-height and sits above adjacent controls */
 .section-header {
-  overflow: visible; /* allow wrapped lines to show */
-}
-.section-header .section-title {
-  display: block; /* ensure normal flow and wrapping */
-  line-height: 1.2; /* leave room for descenders/ascenders */
-  padding: 0.125rem 0; /* small vertical padding to prevent cut-off */
   overflow: visible;
-  z-index: 2; /* keep title above any adjacent pseudo-elements */
+  /* allow wrapped lines to show */
+}
+
+.section-header .section-title {
+  display: block;
+  /* ensure normal flow and wrapping */
+  line-height: 1.2;
+  /* leave room for descenders/ascenders */
+  padding: 0.125rem 0;
+  /* small vertical padding to prevent cut-off */
+  overflow: visible;
+  z-index: 2;
+  /* keep title above any adjacent pseudo-elements */
 }
 
 /* no forced hero-title size in headers — use the global .hero-title size to keep proportions */
@@ -764,6 +904,7 @@ body.login-page .brand-logo-img {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -788,6 +929,7 @@ body.login-page .brand-logo-img {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -861,12 +1003,13 @@ body.login-page .brand-logo-img {
   /* visually matches other inputs but is non-editable and transparent */
   padding: 0.6rem 0.75rem;
   border-radius: 8px;
-  background: transparent; /* keep background transparent as requested */
+  background: transparent;
+  /* keep background transparent as requested */
   min-height: 2.6rem;
   display: flex;
   align-items: center;
   /* subtle input-like underline to indicate a 'bar' */
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.95rem;
   color: var(--text-secondary);
   gap: 0.4rem;
@@ -879,30 +1022,62 @@ body.login-page .brand-logo-img {
   gap: 0.75rem;
   margin-top: 0.35rem;
 }
+
 .strength-bar-inline {
   width: 160px;
   height: 8px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
   overflow: hidden;
 }
+
 .strength-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg,var(--primary-red), #ff5a6e);
+  background: linear-gradient(90deg, var(--primary-red), #ff5a6e);
   transition: width 150ms ease;
 }
-.strength-text { font-size: 0.85rem; color: var(--text-secondary); }
+
+.strength-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
 
 /* Delete account button */
 .btn-delete {
-  background: transparent; color: var(--accent-danger); border: 1px solid var(--accent-danger); padding: 0.5rem 0.75rem; border-radius: 8px; cursor:pointer; font-weight:700;
+  background: transparent;
+  color: var(--accent-danger);
+  border: 1px solid var(--accent-danger);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
 }
-.btn-delete:hover { background: rgba(196,30,58,0.06) }
+
+.btn-delete:hover {
+  background: rgba(196, 30, 58, 0.06)
+}
 
 /* Avatar preview */
-.avatar-preview { width:48px; height:48px; border-radius:50%; overflow:hidden; display:inline-block; border:2px solid var(--primary-red); background:#111; vertical-align:middle; position:relative }
-.avatar-preview img { width:100%; height:100%; object-fit:cover; display:block; max-width:100%; }
+.avatar-preview {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-block;
+  border: 2px solid var(--primary-red);
+  background: #111;
+  vertical-align: middle;
+  position: relative
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  max-width: 100%;
+}
 
 /* small spinner overlay for avatar processing */
 .avatar-spinner {
@@ -914,28 +1089,74 @@ body.login-page .brand-logo-img {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
+
 .avatar-spinner::after {
   content: "";
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.2);
+  border: 3px solid rgba(255, 255, 255, 0.2);
   border-top-color: var(--primary-red);
   animation: spin 0.9s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* Generic targets for showing user avatar across pages */
-.user-avatar { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius:50%; overflow:hidden; background:var(--bg-tertiary); border:1px solid var(--border-color) }
-.user-avatar img.user-avatar-img { width:100%; height:100%; object-fit:cover; display:block }
+.user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color)
+}
+
+.user-avatar img.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block
+}
 
 /* Modal confirm */
-.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:3000 }
-.modal { background:var(--bg-secondary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); width:320px }
-.modal h4 { margin-bottom:0.5rem }
-.modal .modal-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.75rem }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000
+}
+
+.modal {
+  background: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  width: 320px
+}
+
+.modal h4 {
+  margin-bottom: 0.5rem
+}
+
+.modal .modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.75rem
+}
 
 /* Undo banner that appears after deletion */
 .undo-banner {
@@ -943,16 +1164,24 @@ body.login-page .brand-logo-img {
   left: 50%;
   transform: translateX(-50%);
   bottom: 18px;
-  background: rgba(20,20,20,0.95);
+  background: rgba(20, 20, 20, 0.95);
   color: var(--text-primary);
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   z-index: 10050;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
-.undo-banner .undo-content { display:flex; gap:0.5rem; align-items:center }
-.undo-banner .btn-secondary { padding:0.4rem 0.7rem }
+
+.undo-banner .undo-content {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center
+}
+
+.undo-banner .btn-secondary {
+  padding: 0.4rem 0.7rem
+}
 
 .form-group input:focus,
 .form-group select:focus,
@@ -1508,8 +1737,15 @@ body.login-page .brand-logo-img {
 }
 
 @keyframes signout-fade {
-  from { transform: translate(-50%, -40%); opacity: 0 }
-  to { transform: translate(-50%, -50%); opacity: 1 }
+  from {
+    transform: translate(-50%, -40%);
+    opacity: 0
+  }
+
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1
+  }
 }
 
 .demo-info {
@@ -1648,4 +1884,3 @@ body.login-page .brand-logo-img {
     padding: 0.4rem;
   }
 }
-  
