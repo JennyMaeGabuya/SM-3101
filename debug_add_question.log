@@ -625,3 +625,18 @@ egg
 )
 
 
+[2025-12-12 03:54:54] ADD_QUESTION: quiz_id=18 insert_id=20 execError=(none)
+POST:Array
+(
+    [quiz_id] => 18
+    [question_text] => 1+1 =?
+    [question_type] => mcq
+    [options] => A. 2
+B. 4
+C. 6
+D. 10
+    [correct_answer] => 2
+    [correct_answer_short] => 
+)
+
+
